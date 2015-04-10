@@ -27,13 +27,19 @@ package prodocswing.forms;
 
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -128,7 +134,6 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
         ExportFold = new javax.swing.JMenuItem();
         ImportFold = new javax.swing.JMenuItem();
         ImportExtFold = new javax.swing.JMenuItem();
-        jSeparator7 = new javax.swing.JPopupMenu.Separator();
         ReportsFold = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -149,6 +154,8 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
         SearchDocs = new javax.swing.JMenuItem();
         ExportDoc = new javax.swing.JMenuItem();
         ImportDoc = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
+        ImportExtRIS = new javax.swing.JMenuItem();
         jSeparator8 = new javax.swing.JPopupMenu.Separator();
         ReportsDoc = new javax.swing.JMenuItem();
         OtherMenu = new javax.swing.JMenu();
@@ -373,7 +380,6 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
             }
         });
         FolderMenu.add(ImportExtFold);
-        FolderMenu.add(jSeparator7);
 
         ReportsFold.setFont(getFontMenu());
         ReportsFold.setText("Reports");
@@ -554,6 +560,18 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
             }
         });
         DocMenu.add(ImportDoc);
+        DocMenu.add(jSeparator7);
+
+        ImportExtRIS.setFont(getFontMenu());
+        ImportExtRIS.setText(TT("Import_RIS"));
+        ImportExtRIS.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                ImportExtRISActionPerformed(evt);
+            }
+        });
+        DocMenu.add(ImportExtRIS);
         DocMenu.add(jSeparator8);
 
         ReportsDoc.setFont(getFontMenu());
@@ -1597,12 +1615,31 @@ PDReport Rep=new PDReport(Session);
 Rep.setPDId(SR.getSelectedRep());
 ArrayList<String> GeneratedRep = Rep.GenerateRep(ActFolderId, Doc.getListContainedDocs(ActFolderId),  SR.getDocsPerPage(), SR.getPagesPerFile(), getIO_OSFolder());
 setCursor(DefCur);
-Message("generated:"+GeneratedRep.get(0));
+ListReports LR = new ListReports(this, true);
+LR.setLocationRelativeTo(null);
+LR.setRepList(GeneratedRep);
+LR.setVisible(true);
 } catch (Exception ex)
     {
     Message(DrvTT(ex.getLocalizedMessage()));
     }
     }//GEN-LAST:event_ReportsDocActionPerformed
+
+    private void ImportExtRISActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ImportExtRISActionPerformed
+    {//GEN-HEADEREND:event_ImportExtRISActionPerformed
+try {
+DialogImportRIS ImpRIS = new DialogImportRIS(this,true);
+ImpRIS.setLocationRelativeTo(null);
+ImpRIS.setVisible(true);
+if (ImpRIS.isCancel())
+    return;
+PDDocsRIS D=new PDDocsRIS(getSession(), ImpRIS.DefaultRISDocType());
+D.ImportFileRIS(ActFolderId, ImpRIS.GetFilePath());
+} catch (Exception ex)
+    {
+    Message(DrvTT(ex.getLocalizedMessage()));
+    }        
+    }//GEN-LAST:event_ImportExtRISActionPerformed
 
 /**
 * @param args the command line arguments
@@ -1650,6 +1687,7 @@ java.awt.EventQueue.invokeLater(new Runnable()
     private javax.swing.JMenuItem GroupMenuItem;
     private javax.swing.JMenuItem ImportDoc;
     private javax.swing.JMenuItem ImportExtFold;
+    private javax.swing.JMenuItem ImportExtRIS;
     private javax.swing.JMenuItem ImportFold;
     private javax.swing.JMenuItem ListVersions;
     private javax.swing.JMenuItem MimeTypeMenuItem;
@@ -1866,6 +1904,7 @@ else
     if (fc.showSaveDialog(null)!=JFileChooser.APPROVE_OPTION)
         return("");
     }
+setIO_OSFolder(fc.getSelectedFile().getParent());
 return(fc.getSelectedFile().getAbsolutePath());
 }
 //---------------------------------------------------------------------
@@ -1883,6 +1922,7 @@ if (RecomFileName!=null)
 fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 if (fc.showSaveDialog(null)!=JFileChooser.APPROVE_OPTION)
     return("");
+setIO_OSFolder(fc.getSelectedFile().getAbsolutePath());
 return(fc.getSelectedFile().getAbsolutePath());
 }
 //---------------------------------------------------------------------
@@ -1966,7 +2006,8 @@ else
 //---------------------------------------------------------------------
 static private Image getIcon()
 {
-ImageIcon PDIcon=new ImageIcon("resources/LogoProdoc.jpg");
+ImageIcon Ic=new ImageIcon( );    
+ImageIcon PDIcon=new ImageIcon(Ic.getClass().getResource("/resources/LogoProdoc.jpg"));
 return PDIcon.getImage();
 }
 //---------------------------------------------------------------------

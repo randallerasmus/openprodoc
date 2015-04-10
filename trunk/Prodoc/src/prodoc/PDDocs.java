@@ -2591,6 +2591,7 @@ while (DocMeta!=null &&DocMeta.length()!=0)
     Doc.insert();
     DocMeta=Metadata.readLine();
     }
+Metadata.close();
 return(ImageFile);
 }catch(Exception ex)
     {

@@ -954,7 +954,7 @@ Sess.setAttribute("ST_Rec", Rec);
  */
 static public String getVersion()
 {
-return("0.9");
+return("1.2");
 }
 //-----------------------------------------------------------------------------------------------
 /**
