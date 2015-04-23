@@ -1635,6 +1635,7 @@ if (ImpRIS.isCancel())
     return;
 PDDocsRIS D=new PDDocsRIS(getSession(), ImpRIS.DefaultRISDocType());
 D.ImportFileRIS(ActFolderId, ImpRIS.GetFilePath());
+RefreshDocs();
 } catch (Exception ex)
     {
     Message(DrvTT(ex.getLocalizedMessage()));

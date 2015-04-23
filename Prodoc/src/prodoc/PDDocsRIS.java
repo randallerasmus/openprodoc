@@ -57,44 +57,56 @@ Attribute Attr;
 while (DocMeta!=null)
     {
     DocMeta=DocMeta.trim();
-    if (!LT.contains(DocMeta.substring(0, 5)))
-        CurVal+=DocMeta;
-    else
+    if (DocMeta.length()!=0)
         {
-        if (DocMeta.substring(0, TAG_LENGTH).equalsIgnoreCase(START_REC))
+        if (!LT.contains(DocMeta.substring(0, 5)))
+            CurVal+=DocMeta;
+        else
             {
-            Doc=new PDDocs(getDrv(), getDocType());
-            R=Doc.getRecSum();
-            Attribute Attr1=R.getAttr("RIS_"+START_REC.substring(0, 2));
-            String Val=DocMeta.substring(TAG_LENGTH).trim();
-            R.getAttr("RIS_"+START_REC.substring(0, 2)).setValue(DocMeta.substring(TAG_LENGTH).trim());
-            }
-        else if (DocMeta.substring(0, TAG_LENGTH).equalsIgnoreCase(END_REC))
-            {
-            if (Doc!=null)
+            if (DocMeta.substring(0, TAG_LENGTH).equalsIgnoreCase(START_REC))
+                {
+                Doc=new PDDocs(getDrv(), getDocType());
+                R=Doc.getRecSum();
+                Attribute Attr1=R.getAttr("RIS_"+START_REC.substring(0, 2));
+                String Val=DocMeta.substring(TAG_LENGTH).trim();
+                R.getAttr("RIS_"+START_REC.substring(0, 2)).setValue(DocMeta.substring(TAG_LENGTH).trim());
+                }
+            else if (DocMeta.substring(0, TAG_LENGTH).equalsIgnoreCase(END_REC))
+                {
+                if (Doc!=null)
+                    {
+                    if (CurField.length()!=0 && CurVal.length()!=0)
+                        R.getAttr(CurField).setValue(CurVal); 
+                    Doc.assignValues(R);
+                    Doc.setParentId(ActFolderId);
+                    if (Doc.getName()==null || Doc.getName().length()==0)
+                        Doc.setFile("http://www.wikipedia.org/");
+                    else 
+                        {
+                        Doc.setFile(Doc.getName()); // so the "url base" is managed
+                        Doc.setName("");
+                        }
+                    if (R.ContainsAttr("RIS_"+"TI") && R.getAttr("RIS_"+"TI").getValue()!=null)
+                            Doc.setTitle((String)R.getAttr("RIS_"+"TI").getValue());
+                    else if (R.ContainsAttr("RIS_"+"T1") && R.getAttr("RIS_"+"T1").getValue()!=null)
+                            Doc.setTitle((String)R.getAttr("RIS_"+"T1").getValue());
+                    Doc.insert();
+                    }
+                }
+            else 
                 {
                 if (CurField.length()!=0 && CurVal.length()!=0)
-                   R.getAttr(CurField).setValue(CurVal); 
-                Doc.assignValues(R);
-                Doc.setParentId(ActFolderId);
-                if (Doc.getUrl()==null || Doc.getUrl().length()==0)
-                    Doc.setName("http://");
-                Doc.insert();
+                    {
+                    if (!R.getAttr(CurField).isMultivalued())
+                        R.getAttr(CurField).setValue(CurVal); 
+                    else
+                        R.getAttr(CurField).AddValue(CurVal);
+                    }
+                CurField="RIS_"+DocMeta.substring(0, 2);
+                if (CurField.equalsIgnoreCase(URL_REC))
+                   CurField=PDDocs.fNAME;
+                CurVal=DocMeta.substring(TAG_LENGTH).trim();
                 }
-            }
-        else 
-            {
-            if (CurField.length()!=0 && CurVal.length()!=0)
-                {
-                if (!R.getAttr(CurField).isMultivalued())
-                    R.getAttr(CurField).setValue(CurVal); 
-                else
-                    R.getAttr(CurField).AddValue(CurVal);
-                }
-            CurField="RIS_"+DocMeta.substring(0, 2);
-            if (CurField.equalsIgnoreCase(URL_REC))
-               CurField=PDDocs.fNAME;
-            CurVal=DocMeta.substring(TAG_LENGTH).trim();
             }
         }
     DocMeta=Metadata.readLine();
@@ -120,6 +132,7 @@ if (TagList==null)
     {
     TagList=new TreeSet();
     TagList.add("TY  -");
+    TagList.add("A1  -");
     TagList.add("A2  -");
     TagList.add("A3  -");
     TagList.add("A4  -");
@@ -145,6 +158,7 @@ if (TagList==null)
     TagList.add("EP  -");
     TagList.add("ET  -");
     TagList.add("IS  -");
+    TagList.add("JO  -");
     TagList.add("J2  -");
     TagList.add("KW  -");
     TagList.add("L1  -");
@@ -173,6 +187,7 @@ if (TagList==null)
     TagList.add("TT  -");
     TagList.add("UR  -");
     TagList.add("VL  -");
+    TagList.add("Y1  -");
     TagList.add("Y2  -");
     TagList.add("ER  -");
     }
