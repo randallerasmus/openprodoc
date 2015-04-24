@@ -1176,6 +1176,7 @@ while (true)
     } catch (Exception ex)
         {
         Message(DrvTT(ex.getLocalizedMessage()));
+        RefreshDocs();
         }
     }
     }//GEN-LAST:event_AddDocAdvancedActionPerformed
