@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
@@ -70,16 +71,14 @@ while (DocMeta!=null)
                 {
                 Doc=new PDDocs(getDrv(), getDocType());
                 R=Doc.getRecSum();
-                Attribute Attr1=R.getAttr(RIS+START_REC.substring(0, 2));
-                String Val=DocMeta.substring(TAG_LENGTH).trim();
-                R.getAttr(RIS+START_REC.substring(0, 2)).setValue(DocMeta.substring(TAG_LENGTH).trim());
+                SaveAttr(R, START_REC.substring(0,2), DocMeta.substring(DocMeta.indexOf('-')+1).trim());
                 }
             else if (DocMeta.substring(0, TAG_LENGTH).equalsIgnoreCase(END_REC))
                 {
                 if (Doc!=null)
                     {
                     if (CurField.length()!=0 && CurVal.length()!=0)
-                        R.getAttr(CurField).setValue(CurVal); 
+                       SaveAttr(R, CurField, CurVal);
                     Doc.assignValues(R);
                     Doc.setParentId(ActFolderId);
                     if (Doc.getName()==null || Doc.getName().length()==0)
@@ -89,46 +88,13 @@ while (DocMeta!=null)
                         Doc.setFile(Doc.getName()); // so the "url base" is managed
                         Doc.setName("");
                         }
-                    if (R.ContainsAttr(RIS+"TI") && R.getAttr(RIS+"TI").getValue()!=null)
-                            Doc.setTitle((String)R.getAttr(RIS+"TI").getValue());
-                    else if (R.ContainsAttr(RIS+"T1") && R.getAttr(RIS+"T1").getValue()!=null)
-                            Doc.setTitle((String)R.getAttr(RIS+"T1").getValue());
-                    if (R.ContainsAttr(RIS+"Y1") && R.getAttr(RIS+"Y1").getValue()!=null)
-                        {
-                        try {
-                        Doc.setDocDate(formatterDate.parse((String)R.getAttr(RIS+"Y1").getValue()));    
-                        } catch (Exception Ex)
-                            {}
-                        }
-                    else if (R.ContainsAttr(RIS+"Y2") && R.getAttr(RIS+"Y2").getValue()!=null)
-                        {
-                        try {
-                        Doc.setDocDate(formatterDate.parse((String)R.getAttr(RIS+"Y2").getValue()));    
-                        } catch (Exception Ex)
-                            {}
-                        }
-                    else if (R.ContainsAttr(RIS+"PY") && R.getAttr(RIS+"PY").getValue()!=null)
-                        {
-                        try {
-                        Doc.setDocDate(formatterDate.parse((String)R.getAttr(RIS+"PY").getValue()));    
-                        } catch (Exception Ex)
-                            {}
-                        }
                     Doc.insert();
                     }
                 }
             else 
                 {
-                if (CurField.length()!=0 && CurVal.length()!=0)
-                    {
-                    if (!R.getAttr(CurField).isMultivalued())
-                        R.getAttr(CurField).setValue(CurVal); 
-                    else
-                        R.getAttr(CurField).AddValue(CurVal);
-                    }
-                CurField=RIS+DocMeta.substring(0, 2);
-                if (CurField.equalsIgnoreCase(RIS+URL_REC))
-                   CurField=PDDocs.fNAME;
+                SaveAttr(R, CurField, CurVal);
+                CurField=DocMeta.substring(0, 2);
                 CurVal=DocMeta.substring(DocMeta.indexOf('-')+1).trim();
                 }
             }
@@ -181,10 +147,12 @@ if (TagList==null)
     TagList.add("DP  -");
     TagList.add("EP  -");
     TagList.add("ET  -");
+    TagList.add("ID  -");
     TagList.add("IS  -");
     TagList.add("JA  -");
     TagList.add("JF  -");
     TagList.add("JO  -");
+    TagList.add("J1  -");
     TagList.add("J2  -");
     TagList.add("KW  -");
     TagList.add("L1  -");
@@ -246,10 +214,12 @@ if (TagList==null)
     TagList.add("DP -");
     TagList.add("EP -");
     TagList.add("ET -");
+    TagList.add("ID -");
     TagList.add("IS -");
     TagList.add("JF -");
     TagList.add("JA -");
     TagList.add("JO -");
+    TagList.add("J1 -");
     TagList.add("J2 -");
     TagList.add("KW -");
     TagList.add("L1 -");
@@ -286,6 +256,63 @@ if (TagList==null)
     TagList.add("ER -");
     }
 return(TagList);
+}
+//-------------------------------------------------------------------------    
+/**
+ * Parses an author's field cutting by " and "
+ * @param CurVal current field
+ * @return a list of authors
+ */
+private  String[] ParseAuthors(String CurVal)
+{
+return (CurVal.split(" and "));       
+}
+//-------------------------------------------------------------------------    
+
+private void SaveAttr(Record R, String CurField, String CurVal) throws PDException
+{
+String DestField=CalculateField(R, CurField);   
+if (DestField==null || CurVal.length()==0)
+    return;
+if (!R.getAttr(DestField).isMultivalued())
+    {
+    if (CurField.equalsIgnoreCase("Y1") || CurField.equalsIgnoreCase("Y2")
+        || CurField.equalsIgnoreCase("PY"))
+        {try { 
+        R.getAttr(PDDocs.fDOCDATE).setValue(formatterDate.parse(CurVal));
+        } catch (Exception Ex) {}
+        }
+    else if (CurField.equalsIgnoreCase("TI") || CurField.equalsIgnoreCase("T1"))
+        R.getAttr(PDDocs.fTITLE).setValue(CurVal);
+    R.getAttr(DestField).setValue(CurVal); 
+    }
+else
+    {
+    if ( (CurField.equalsIgnoreCase("A1") || CurField.equalsIgnoreCase("A2")
+       || CurField.equalsIgnoreCase("A3") || CurField.equalsIgnoreCase("A4")
+       || CurField.equalsIgnoreCase("AU")) && CurVal.length()> 254)
+        {
+        String[] ListAU=ParseAuthors(CurVal);
+        for (String ListAU1 : ListAU)
+            R.getAttr(DestField).AddValue(ListAU1);
+        }
+    else        
+        R.getAttr(DestField).AddValue(CurVal);
+    }
+}
+//-------------------------------------------------------------------------    
+
+private String CalculateField(Record R, String CurField)
+{
+String DestField;
+if (CurField.equalsIgnoreCase(URL_REC))
+   DestField=PDDocs.fNAME;
+else
+    DestField=RIS+CurField;
+if (R.ContainsAttr(DestField))
+    return(DestField);
+else
+    return(null);
 }
 //-------------------------------------------------------------------------    
 }
