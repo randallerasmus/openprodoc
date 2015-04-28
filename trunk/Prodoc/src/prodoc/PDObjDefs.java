@@ -1115,7 +1115,7 @@ if (PDLog.isDebug())
 Condition CondType=new Condition(fTYPNAME, Condition.cEQUAL, ClassName);
 Conditions Conds=new Conditions();
 Conds.addCondition(CondType);
-Query ListAttr=new Query(getTabNameAttrs(), getRecordAttrsStruct(), Conds);
+Query ListAttr=new Query(getTabNameAttrs(), getRecordAttrsStruct(), Conds, fATTRUSERNAME);
 Cursor Cur=getDrv().OpenCursor(ListAttr);
 if (PDLog.isDebug())
     PDLog.Debug("PDObjDefs.getListAttr<:"+Cur);
