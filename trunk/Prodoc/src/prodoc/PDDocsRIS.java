@@ -23,7 +23,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 /**
@@ -40,6 +40,7 @@ static private final String RIS="RIS_";
 static private final int TAG_LENGTH=5;
 final SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy/MM/dd");
 
+private HashMap<String, String> ListEquiv=null; 
 //-------------------------------------------------------------------------    
 public PDDocsRIS(DriverGeneric Drv, String pDocType) throws PDException
 {
@@ -276,15 +277,18 @@ if (DestField==null || CurVal.length()==0)
     return;
 if (!R.getAttr(DestField).isMultivalued())
     {
-    if (CurField.equalsIgnoreCase("Y1") || CurField.equalsIgnoreCase("Y2")
-        || CurField.equalsIgnoreCase("PY"))
+    if (R.getAttr(DestField).getType()==Attribute.tDATE)
         {try { 
-        R.getAttr(PDDocs.fDOCDATE).setValue(formatterDate.parse(CurVal));
+        R.getAttr(DestField).setValue(formatterDate.parse(CurVal));
         } catch (Exception Ex) {}
         }
-    else if (CurField.equalsIgnoreCase("TI") || CurField.equalsIgnoreCase("T1"))
-        R.getAttr(PDDocs.fTITLE).setValue(CurVal);
-    R.getAttr(DestField).setValue(CurVal); 
+    else 
+        {
+        R.getAttr(DestField).setValue(R.getAttr(DestField).getValue()==null?CurVal:R.getAttr(DestField).getValue()+"/"+CurVal); 
+        if ((CurField.equalsIgnoreCase("TI") || CurField.equalsIgnoreCase("T1") || CurField.equalsIgnoreCase("T2")) 
+            && (R.getAttr(PDDocs.fTITLE).getValue()==null || ((String)R.getAttr(PDDocs.fTITLE).getValue()).length()==0))
+            R.getAttr(PDDocs.fTITLE).setValue(CurVal);
+        }
     }
 else
     {
@@ -301,18 +305,61 @@ else
     }
 }
 //-------------------------------------------------------------------------    
-
+/**
+ * Calculate the field to store the readed metadata
+ * @param R
+ * @param CurField
+ * @return 
+ */
 private String CalculateField(Record R, String CurField)
 {
+if (CurField.equalsIgnoreCase("TI"))
+    return(PDDocs.fTITLE);
+HashMap<String, String> ListFieldEquiv=getEquiv(R);    
 String DestField;
 if (CurField.equalsIgnoreCase(URL_REC))
-   DestField=PDDocs.fNAME;
+   return(PDDocs.fNAME);
+if (ListFieldEquiv.size()>0)
+    DestField=ListFieldEquiv.get(CurField);
 else
     DestField=RIS+CurField;
 if (R.ContainsAttr(DestField))
     return(DestField);
+else if (CurField.equalsIgnoreCase("T1") || CurField.equalsIgnoreCase("T2"))
+        return(PDDocs.fTITLE);
+else if (CurField.equalsIgnoreCase("Y1") || CurField.equalsIgnoreCase("Y2")
+        || CurField.equalsIgnoreCase("PY"))
+    return(PDDocs.fDOCDATE);
 else
     return(null);
+}
+//-------------------------------------------------------------------------    
+
+private HashMap<String, String> getEquiv(Record R)
+{
+if (ListEquiv!=null)
+    return(ListEquiv);
+String DescAttr;
+int Sp, Ep;
+Attribute Attr;
+String ListAttr;
+ListEquiv=new HashMap();
+R.initList();
+for (int i = 0; i < R.NumAttr(); i++)
+    {
+    Attr=R.nextAttr();
+    DescAttr=Attr.getDescription();
+    Sp=DescAttr.indexOf('(');
+    Ep=DescAttr.indexOf(')');
+    if (Sp<Ep && Sp!=-1 && Ep!=-1)
+        {
+        ListAttr=DescAttr.substring(Sp+1, Ep);
+        String[] split = ListAttr.split(",");
+        for (String split1 : split)
+            ListEquiv.put(split1.trim(), Attr.getName());
+        }
+    }
+return(ListEquiv);
 }
 //-------------------------------------------------------------------------    
 }
