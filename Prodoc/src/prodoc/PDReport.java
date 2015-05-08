@@ -291,7 +291,10 @@ if (PosSize!=-1)
 if (Line.substring(R_VAL_ATTR.length()+1).startsWith("*")) // @OPD_VAL_ATTR_*
    Attr1=Attr;
 else
+    {
+    String s=Line.substring(R_VAL_ATTR.length()+1);
     Attr1=Res.getAttr(Line.substring(R_VAL_ATTR.length()+1)); // @OPD_VAL_ATTR_TITLE
+    }
 if (Attr1==null)
     return("");
 String Res=Attr1.Export();
@@ -474,10 +477,6 @@ FRepDoc.println("");
  */
 private void PrintRec() throws PDException
 {
-for (int i = RecLoopStart; i < AttrLoopStart; i++)
-    {
-    ProcessLine(RepLines.get(i));
-    }
 if (Res==null)
     FRepDoc.println("Res==null");
 if (ExpandObject)
@@ -495,6 +494,10 @@ if (ExpandObject)
         D.LoadFull((String)Res.getAttr(PDDocs.fPDID).getValue());
         Res=D.getRecSum();
         }
+    }
+for (int i = RecLoopStart; i < AttrLoopStart; i++)
+    {
+    ProcessLine(RepLines.get(i));
     }
 TreeMap<String, Attribute> AttrList=new TreeMap();
 Res.initList();
