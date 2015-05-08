@@ -2024,6 +2024,7 @@ try {
     DocsContained.setDrv(MainWin.getSession());
     FoldAct.getListDirectDescendList(ActFolderId);
     PDDocs Doc = new PDDocs(getSession());
+    Record R1=Doc.getRecordStruct();
     DocsContained.setListFields(Doc.getRecordStruct());
     DocsContained.setCursor(Doc.getListContainedDocs(FoldAct.getPDId()));
     DocsTable.setModel(DocsContained);
