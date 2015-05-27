@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Class for generating "reports"
@@ -43,6 +45,8 @@ private static final String R_LOOPDOCS_S="@OPD_DOCSLOOP_S";
 private static final String R_LOOPDOCS_E="@OPD_DOCSLOOP_E";
 private static final String R_LOOPATTR_S="@OPD_ATTRLOOP_S";
 private static final String R_LOOPATTR_E="@OPD_ATTRLOOP_E";
+private static final String R_LOOPVAL_S="@OPD_VALLOOP_S";
+private static final String R_LOOPVAL_E="@OPD_VALLOOP_E";
 private static final String R_GLOBPARENT="@OPD_GLOBPARENT";
 private static final String R_PARENT="@OPD_PARENT";
 private static final String R_NAME_ATTR="@OPD_NAME_ATTR";
@@ -58,6 +62,8 @@ private int RecLoopStart=0;
 private int RecLoopEnd=0;
 private int AttrLoopStart=-1;
 private int AttrLoopEnd=-1;
+private int ValLoopStart=-1;
+private int ValLoopEnd=-1;
 PrintWriter FRepDoc = null;
 private int RecsPag; 
 private int PagsDoc;
@@ -74,6 +80,8 @@ private HashSet<String> ListIgnTypes=null;
 private HashSet<String> ListIgnFields=null; 
 public static final String fDOCSPAGE="DOCSPAGE";
 public static final String fPAGESDOC="PAGESDOCS";
+private TreeSet AttrValuesList=null;
+private Object CurVal=null;
 /**
  * Default constructor
  * @param pDrv Generic sesion to be used
@@ -193,6 +201,10 @@ while (Line!=null)
         }
     else if (Line.equals(R_LOOPATTR_E))
         AttrLoopEnd=RepLines.size();
+    else if (Line.equals(R_LOOPVAL_S))
+        ValLoopStart=RepLines.size();
+    else if (Line.equals(R_LOOPVAL_E))
+        ValLoopEnd=RepLines.size();
     else
         RepLines.add(Line);
     Line=BR.readLine();
@@ -203,6 +215,10 @@ if (AttrLoopStart==-1)
     AttrLoopStart=RecLoopStart;
 if (AttrLoopEnd==-1)
    AttrLoopEnd=RecLoopStart; 
+if (ValLoopStart==-1)
+    ValLoopStart=AttrLoopStart;
+if (ValLoopEnd==-1)
+    ValLoopEnd=AttrLoopEnd; 
 } catch (Exception Ex)
     {
     if (BR!=null)
@@ -297,15 +313,19 @@ else
     }
 if (Attr1==null)
     return("");
-String Res=Attr1.Export();
-if (ElemSize==0)
-    return(Res); 
-else if (Res.length()>=ElemSize)
-    return(Res.substring(0, ElemSize));
-else if (Attr1.getType()==Attribute.tSTRING || Attr1.getType()==Attribute.tTHES)
-   return(Res+GetSpaces(ElemSize-Res.length()));  
+String ResVal;
+if (Attr1.isMultivalued())
+    ResVal=(String)CurVal;
 else    
-   return(GetSpaces(ElemSize-Res.length())+Res);  
+    ResVal=Attr1.Export();
+if (ElemSize==0)
+    return(ResVal); 
+else if (ResVal.length()>=ElemSize)
+    return(ResVal.substring(0, ElemSize));
+else if (Attr1.getType()==Attribute.tSTRING || Attr1.getType()==Attribute.tTHES)
+   return(ResVal+GetSpaces(ElemSize-ResVal.length()));  
+else    
+   return(GetSpaces(ElemSize-ResVal.length())+ResVal);  
 }
 //-------------------------------------------------------------------------
 /**
@@ -511,9 +531,27 @@ while (Attr!=null)
 for (Map.Entry<String, Attribute> entrySet : AttrList.entrySet())
     {
     Attr = entrySet.getValue();
-    for (int i = AttrLoopStart; i < AttrLoopEnd; i++)
+    if (!Attr.isMultivalued())
         {
-        ProcessLine(RepLines.get(i));
+        CurVal=Attr.getValue();
+        for (int i = AttrLoopStart; i < AttrLoopEnd; i++)
+            {
+            ProcessLine(RepLines.get(i));
+            }
+        }
+    else
+        {
+        for (int i = AttrLoopStart; i < ValLoopStart; i++)
+            ProcessLine(RepLines.get(i));
+        AttrValuesList = Attr.getValuesList();
+        for (Iterator iterator1 = AttrValuesList.iterator(); iterator1.hasNext();)
+                {
+                CurVal = iterator1.next();
+                for (int i = ValLoopStart; i < ValLoopEnd; i++)
+                    ProcessLine(RepLines.get(i));
+                }
+        for (int i = ValLoopEnd; i < AttrLoopEnd; i++)
+            ProcessLine(RepLines.get(i));
         }
     }
 for (int i = AttrLoopEnd; i < RecLoopEnd; i++)
@@ -586,13 +624,14 @@ for (String ListField : ListFields)
  * @param Attr Attribute to check
  * @return true if can be included
  */
-private boolean CanInclude(Attribute Attr)
+private boolean CanInclude(Attribute Attr) throws PDException
 {
 if (ListIgnFields!=null && ListIgnFields.contains(Attr.getName().toUpperCase()))
     return(false);
 if (DelNull)
     {
-    if (Attr.getValue()==null || Attr.Export().length()==0)
+    if (!Attr.isMultivalued() && (Attr.getValue()==null || Attr.Export().length()==0)
+        || Attr.isMultivalued() && (Attr.getValuesList()==null || Attr.getValuesList().isEmpty()) )
         return(false);
     }
 return(true);
