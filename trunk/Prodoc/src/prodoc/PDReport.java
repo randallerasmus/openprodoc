@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 /**
  * Class for generating "reports"
@@ -55,8 +56,8 @@ private static final String R_VAL_ATTR="@OPD_VAL_ATTR";
 private static final String R_REF_ATTR="@OPD_REF_ATTR";
 private static final String R_RECCOUNT="@OPD_RECCOUNT";
 private static final String R_PAGCOUNT="@OPD_PAGCOUNT";
-String IdParent=null;
-Cursor ListDocs=null;
+private String IdParent=null;
+private Cursor ListDocs=null;
 private final ArrayList<String> RepLines=new ArrayList();
 private int RecLoopStart=0;
 private int RecLoopEnd=0;
@@ -82,6 +83,7 @@ public static final String fDOCSPAGE="DOCSPAGE";
 public static final String fPAGESDOC="PAGESDOCS";
 private TreeSet AttrValuesList=null;
 private Object CurVal=null;
+private Vector<Record> VectRec=null;
 /**
  * Default constructor
  * @param pDrv Generic sesion to be used
@@ -96,17 +98,25 @@ super(pDrv,getTableName());
  * generates a report with the current PDId
  * @param pIdParent Parent of the "cursor". Can be null
  * @param pListDocs Cursor with the list of docs
+ * @param VectRec List of records to be extracted
  * @param pRecsPag Number oc record by page
  * @param pPagsDoc Number of pages by Archive
+ * @param OSFolder Folder for saving reports
  * @return path to the generated Report.
  * @throws prodoc.PDException
  */
-public ArrayList<String> GenerateRep(String pIdParent, Cursor pListDocs, int pRecsPag, int pPagsDoc, String OSFolder) throws PDException
+public ArrayList<String> GenerateRep(String pIdParent, Cursor pListDocs, Vector pVectRec, int pRecsPag, int pPagsDoc, String OSFolder) throws PDException
 {
+if (pListDocs!=null)    
+    ListDocs=pListDocs;
+else if (pVectRec!=null)
+    VectRec=pVectRec;
+else
+    PDException.GenPDException("Cursor_or_Vector_of_Records_needed", null);
+int CountVect=0;
 ArrayList<String> ListFiles=new ArrayList();
 Load(getPDId());  
 IdParent=pIdParent;
-ListDocs=pListDocs;
 RecsPag=pRecsPag!=0?pRecsPag:99999999;
 PagsDoc=pPagsDoc!=0?pPagsDoc:99999999;
 String GenRep = OSFolder;
@@ -119,7 +129,15 @@ try {
 ReadTemplate(OrigRep);
 FRepDoc = new PrintWriter(GenRep+"_0."+getMimeType(), "UTF-8");
 PrintHeader();
-Res=getDrv().NextRec(ListDocs);
+if (ListDocs!=null) 
+    Res=getDrv().NextRec(ListDocs);
+else
+    {
+    if (CountVect>=VectRec.size())
+        Res=null;
+    else
+        Res=VectRec.get(CountVect++);
+    }
 while (Res!=null)    
     {
     if (CanInclude(Res))
@@ -128,7 +146,15 @@ while (Res!=null)
         RecsInPageCount++;
         PrintRec();
         }
-    Res=getDrv().NextRec(ListDocs);
+    if (ListDocs!=null) 
+        Res=getDrv().NextRec(ListDocs);
+    else
+        {
+        if (CountVect>=VectRec.size())
+            Res=null;
+        else
+            Res=VectRec.get(CountVect++);
+        }
     if (RecsInPageCount>=RecsPag)
         {
         if (Res!=null)
@@ -148,14 +174,16 @@ while (Res!=null)
         PagesCount++;
         }   
     }
-getDrv().CloseCursor(ListDocs);
+if (ListDocs!=null) 
+    getDrv().CloseCursor(ListDocs);
 PrintFooter();
 FRepDoc.close();
 } catch (Exception Ex)
     {
     if (FRepDoc!=null)
         FRepDoc.close();
-    getDrv().CloseCursor(ListDocs);
+    if (ListDocs!=null) 
+        getDrv().CloseCursor(ListDocs);
     PDException.GenPDException(Ex.getLocalizedMessage() , getPDId()+"/"+getTitle());
     }
 return(ListFiles);
@@ -419,33 +447,43 @@ else
 if (Attr1==null)
     return("");
 String AttrName = Attr1.getName();
-String Res;
+String ResVal;
 if (AttrName.equals(PDDocs.fPARENTID))
     {
     PDFolders Fold=new PDFolders(getDrv());
     Fold.Load((String)Attr1.getValue());
-    Res=Fold.getTitle();
+    ResVal=Fold.getTitle();
     } 
 else if (Attr1.getType()==Attribute.tTHES)
     {
     PDThesaur Thes=new PDThesaur(getDrv());
-    Thes.Load((String)Attr1.getValue());
-    Res=Thes.getName();
+    if (Attr1.getValue()!=null)
+        {
+        Thes.Load((String)Attr1.getValue());
+        ResVal=Thes.getName();
+        }
+    else
+        ResVal="";
     }
 else if (AttrName.equals(PDDocs.fMIMETYPE))
     {
     PDMimeType MT=new PDMimeType(getDrv());
     MT.Load((String)Attr1.getValue());
-    Res=MT.getDescription();
+    ResVal=MT.getDescription();
     }
 else
-    Res=Attr1.Export();  
+    {
+    if (Attr1.isMultivalued())
+        ResVal=(String)CurVal;
+    else    
+        ResVal=Attr1.Export();
+    }
 if (ElemSize==0)
-    return(Res); 
-else if (Res.length()>=ElemSize)
-    return(Res.substring(0, ElemSize));
+    return(ResVal); 
+else if (ResVal.length()>=ElemSize)
+    return(ResVal.substring(0, ElemSize));
 else
-   return(Res+GetSpaces(ElemSize-Res.length())); 
+   return(ResVal+GetSpaces(ElemSize-ResVal.length())); 
 }
 //-------------------------------------------------------------------------
 /**
