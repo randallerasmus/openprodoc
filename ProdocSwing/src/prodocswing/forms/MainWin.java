@@ -72,6 +72,14 @@ static private String ActFolderId=PDFolders.ROOTFOLDER;
 static private PDTableModel DocsContained;
 static private int ExpFolds=0;
 static private int ExpDocs=0;
+
+    /**
+     * @return the ActFolderId
+     */
+    public static String getActFolderId()
+    {
+        return ActFolderId;
+    }
 private PDFolders FoldAct=null;
 private static final String List=PDFolders.fACL+"/"+PDFolders.fFOLDTYPE+"/"+PDFolders.fPARENTID+"/"+PDFolders.fPDID+"/"+PDFolders.fTITLE+"/"+PDFolders.fPDAUTOR+"/"+PDFolders.fPDDATE;
 private static final HashSet ExecFiles=new HashSet();
@@ -382,6 +390,7 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
         FolderMenu.add(ImportExtFold);
 
         ReportsFold.setFont(getFontMenu());
+        ReportsFold.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Report.png"))); // NOI18N
         ReportsFold.setText("Reports");
         ReportsFold.addActionListener(new java.awt.event.ActionListener()
         {
@@ -575,6 +584,7 @@ setTitle(getTitle()+" @"+getSession().getUser().getName()+"("+getSession().getUs
         DocMenu.add(jSeparator8);
 
         ReportsDoc.setFont(getFontMenu());
+        ReportsDoc.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Report.png"))); // NOI18N
         ReportsDoc.setText("Reports");
         ReportsDoc.addActionListener(new java.awt.event.ActionListener()
         {
@@ -954,7 +964,7 @@ if (NewFoldChild==null || NewFoldChild.length()==0)
     return;
 try {
 PDFolders Fold=new PDFolders(Session);
-Fold.setPDId(ActFolderId);
+Fold.setPDId(getActFolderId());
 Fold.CreateChild(NewFoldChild);
 TreePath ActualPath = TreeFolder.getSelectionPath();
 DefaultMutableTreeNode TreeFold = (DefaultMutableTreeNode) ActualPath.getLastPathComponent();
@@ -975,7 +985,7 @@ PDFolders Fold= ((TreeFolder) TreeFold.getUserObject()).getFold();
 DialogEditFold DEF = new DialogEditFold(this, true);
 DEF.setLocationRelativeTo(null);
 DEF.DelMode();
-Fold.LoadFull(ActFolderId);
+Fold.LoadFull(getActFolderId());
 DEF.setRecord(Fold.getRecord());
 DEF.setVisible(true);
 if (DEF.isCancel())
@@ -1008,7 +1018,7 @@ if (DEF.isCancel())
     return;
 Fold=new PDFolders(Session);
 Fold.assignValues(DEF.getRecord());
-Fold.setParentId(ActFolderId);
+Fold.setParentId(getActFolderId());
 Fold.insert();
 TreePath ActualPath = TreeFolder.getSelectionPath();
 ExpandFold((DefaultMutableTreeNode)ActualPath.getLastPathComponent());
@@ -1103,7 +1113,7 @@ while (true)
         Doc.setFile(MD.SelFile.getAbsolutePath());
     else
         throw new PDException("Error_retrieving_file");
-    Doc.setParentId(ActFolderId);
+    Doc.setParentId(getActFolderId());
     Doc.insert();
     RefreshDocs();
     return;
@@ -1169,7 +1179,7 @@ while (true)
         Doc.setFile(MD.GetSelectPath());
     else
         throw new PDException("Error_retrieving_file");
-    Doc.setParentId(ActFolderId);
+    Doc.setParentId(getActFolderId());
     Doc.insert();
     RefreshDocs();
     return;
@@ -1290,14 +1300,14 @@ LV.setVisible(true);
     private void SearchFoldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchFoldActionPerformed
 SearchFold SF = new SearchFold(this, true);
 SF.setLocationRelativeTo(null);
-SF.setFoldAct(ActFolderId);
+SF.setFoldAct(getActFolderId());
 SF.setVisible(true);     
     }//GEN-LAST:event_SearchFoldActionPerformed
 
     private void SearchDocsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchDocsActionPerformed
 SearchDocs SD = new SearchDocs(this, true);
 SD.setLocationRelativeTo(null);
-SD.setFoldAct(ActFolderId);
+SD.setFoldAct(getActFolderId());
 SD.setVisible(true);
     }//GEN-LAST:event_SearchDocsActionPerformed
 
@@ -1402,7 +1412,7 @@ if (FileName.length()==0)
 try {
 PDDocs Doc = new PDDocs(getSession());
 File FileImp=new File(FileName);  
-getSession().ProcessXML(FileImp, ActFolderId); 
+getSession().ProcessXML(FileImp, getActFolderId()); 
 RefreshDocs();
 } catch (Exception ex)
     {
@@ -1585,12 +1595,12 @@ if (SR.isCancel())
 setCursor(WaitCur);
 PDFolders Fold=new PDFolders(Session);
 Conditions Conds=new Conditions();
-Condition Cond=new Condition(PDFolders.fPARENTID, Condition.cEQUAL, ActFolderId);
+Condition Cond=new Condition(PDFolders.fPARENTID, Condition.cEQUAL, getActFolderId());
 Conds.addCondition(Cond);
 Cursor Cur=Fold.Search(PDFolders.getTableName(), Conds,  true, false, null, null);
 PDReport Rep=new PDReport(Session);
 Rep.setPDId(SR.getSelectedRep());
-ArrayList<String> GeneratedRep = Rep.GenerateRep(ActFolderId, Cur,  SR.getDocsPerPage(), SR.getPagesPerFile(), getIO_OSFolder());
+ArrayList<String> GeneratedRep = Rep.GenerateRep(getActFolderId(), Cur, null, SR.getDocsPerPage(), SR.getPagesPerFile(), getIO_OSFolder());
 setCursor(DefCur);
 ListReports LR = new ListReports(this, true);
 LR.setLocationRelativeTo(null);
@@ -1614,7 +1624,7 @@ setCursor(WaitCur);
 PDDocs Doc=new PDDocs(Session);
 PDReport Rep=new PDReport(Session);
 Rep.setPDId(SR.getSelectedRep());
-ArrayList<String> GeneratedRep = Rep.GenerateRep(ActFolderId, Doc.getListContainedDocs(ActFolderId),  SR.getDocsPerPage(), SR.getPagesPerFile(), getIO_OSFolder());
+ArrayList<String> GeneratedRep = Rep.GenerateRep(getActFolderId(), Doc.getListContainedDocs(getActFolderId()), null, SR.getDocsPerPage(), SR.getPagesPerFile(), getIO_OSFolder());
 setCursor(DefCur);
 ListReports LR = new ListReports(this, true);
 LR.setLocationRelativeTo(null);
@@ -1635,7 +1645,7 @@ ImpRIS.setVisible(true);
 if (ImpRIS.isCancel())
     return;
 PDDocsRIS D=new PDDocsRIS(getSession(), ImpRIS.DefaultRISDocType());
-D.ImportFileRIS(ActFolderId, ImpRIS.GetFilePath());
+D.ImportFileRIS(getActFolderId(), ImpRIS.GetFilePath());
 RefreshDocs();
 } catch (Exception ex)
     {
@@ -2022,7 +2032,7 @@ private void RefreshDocs()
 try {
     DocsContained = new PDTableModel();
     DocsContained.setDrv(MainWin.getSession());
-    FoldAct.getListDirectDescendList(ActFolderId);
+    FoldAct.getListDirectDescendList(getActFolderId());
     PDDocs Doc = new PDDocs(getSession());
     Record R1=Doc.getRecordStruct();
     DocsContained.setListFields(Doc.getRecordStruct());
