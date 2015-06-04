@@ -32,6 +32,7 @@ import prodoc.PDFolders;
 import prodoc.PDThesaur;
 import prodoc.Record;
 import prodocUI.forms.FMantFoldAdv;
+import prodocUI.forms.FSearchFoldAdv;
 import prodocUI.servlet.SMain;
 import prodocUI.servlet.SParent;
 
@@ -98,11 +99,11 @@ if (FL.isEmpty())
     {
     return(new Element(" "));
     }
-Table AditionFieldsTab=new Table(4, FL.size(), 0);
+Table AditionFieldsTab=new Table(5, FL.size(), 0);
 AditionFieldsTab.setWidth(-100);
 AditionFieldsTab.setCellPadding(5);
 AditionFieldsTab.setCSSClass("FFormularios");
-AditionFieldsTab.getCelda(0,0).setWidth(-25);
+AditionFieldsTab.getCelda(0,0).setWidth(-15);
 AditionFieldsTab.getCelda(0,0).setHeight(30);
 Field FieldHtml;
 for (int i = 0; i < FL.size(); i++)
@@ -146,7 +147,7 @@ for (int i = 0; i < FL.size(); i++)
         }
     else if (Attr.getType()==Attribute.tTHES)
         {
-        if (Attr.getValue()!=null)    
+        if (Attr.getValue()!=null && ((String)Attr.getValue()).length()!=0)    
             {
             PDThesaur TermU=new PDThesaur(SMain.getSessOPD(Req));
             TermU.Load((String)Attr.getValue());
@@ -169,8 +170,8 @@ for (int i = 0; i < FL.size(); i++)
         }
     if (pMode==FMantFoldAdv.DELMOD || pMode==FMantFoldAdv.EDIMOD && !Attr.isModifAllowed())
         FieldHtml.setActivado(false);
-//    FieldHtml.setCSSClass("FFormInput");
-    AditionFieldsTab.getCelda(2,i).AddElem(FieldHtml);
+    AditionFieldsTab.getCelda(2,i).AddElem(new FieldComboOper(FSearchFoldAdv.COMP+Attr.getName()));
+    AditionFieldsTab.getCelda(3,i).AddElem(FieldHtml);
     }
 return(AditionFieldsTab);
 }

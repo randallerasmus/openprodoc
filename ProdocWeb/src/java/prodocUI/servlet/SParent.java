@@ -463,30 +463,43 @@ else
  */
 static public Condition FillCond(HttpServletRequest Req, Attribute Attr, String Val) throws PDException
 {
+return(FillCond(Req, Attr, Val, Condition.cEQUAL));    
+}
+//--------------------------------------------------------------
+/**
+ * Creates a new condition of the attribute with the text o value of the fieldest1
+ * @param Req
+ * @param Attr
+ * @param Val
+ * @return a new condition
+ * @throws PDException
+ */
+static public Condition FillCond(HttpServletRequest Req, Attribute Attr, String Val, int Oper) throws PDException
+{
 Condition Cond = null;
 try {
 if (Attr.getType()==Attribute.tSTRING || Attr.getType()==Attribute.tTHES)
     {
-    Cond=new Condition(Attr.getName(), Condition.cEQUAL, Val);
+    Cond=new Condition(Attr.getName(), Oper, Val);
     Attr.setValue(Val);
     }
 else if (Attr.getType()==Attribute.tDATE)
     {
     // Cond=new Condition(Attr.getName(), Condition.cEQUAL, getFormatterDate(Req).parse(Val));
     Attr.setValue(getFormatterDate(Req).parse(Val));   
-    Cond=new Condition(Attr, Condition.cEQUAL);
+    Cond=new Condition(Attr, Oper);
     }
 else if (Attr.getType()==Attribute.tTIMESTAMP)
     {
 //     Cond=new Condition(Attr.getName(), Condition.cEQUAL, getFormatterTS(Req).parse(Val));
     Attr.setValue(getFormatterTS(Req).parse(Val));
-    Cond=new Condition(Attr, Condition.cEQUAL);
+    Cond=new Condition(Attr, Oper);
     }
 else if (Attr.getType()==Attribute.tBOOLEAN)
     {
     if (Val!=null)
         {
-        Cond=new Condition(Attr.getName(), Condition.cEQUAL, true);
+        Cond=new Condition(Attr.getName(), Oper, true);
         Attr.setValue(true);
         }
     }

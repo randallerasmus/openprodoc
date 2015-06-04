@@ -77,7 +77,7 @@ BorderTab.getCelda(0,3).AddElem(CancelButton);
 BorderTab.getCelda(0,4).AddElem(Status);
 BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
 BorderTab.getCelda(0,4).AddElem(HHelp);
-Table FormTab=new Table(4, 5, 0);
+Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
 FormTab.setCSSClass("FFormularios");
