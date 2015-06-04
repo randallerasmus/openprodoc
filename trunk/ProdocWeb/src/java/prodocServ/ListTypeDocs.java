@@ -139,7 +139,7 @@ for (int i = 0; i < FL.size(); i++)
         }
     else if (Attr.getType()==Attribute.tTHES)
         {
-        if (Attr.getValue()!=null)    
+        if (Attr.getValue()!=null && ((String)Attr.getValue()).length()!=0)
             {            
             PDThesaur TermU=new PDThesaur(SMain.getSessOPD(Req));
             TermU.Load((String)Attr.getValue());

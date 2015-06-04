@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import prodoc.Attribute;
 import prodoc.Cursor;
 import prodoc.DriverGeneric;
+import prodoc.PDDocs;
 import prodoc.PDException;
 import prodoc.PDFolders;
 import prodoc.Record;
@@ -43,7 +44,11 @@ FieldCombo ListTip;
 FieldCombo ListACL;
 public FieldText FoldTitle;
 
-static private String ListExcluded=PDFolders.fPARENTID+"/"+PDFolders.fPDID+"/"+PDFolders.fPDAUTOR+"/"+PDFolders.fPDDATE;
+private static final String ListExcluded=PDFolders.fPARENTID+"/"+PDFolders.fPDID+"/"+PDFolders.fPDAUTOR+"/"+PDFolders.fPDDATE;
+
+static final private String COMPTITLE="COMP__"+PDDocs.fTITLE;
+static final private String COMPACL="COMP__"+PDDocs.fACL;
+static final public String COMP="COMP__";
 
 /** Creates a new instance of FMantFoldAdv
  * @param Req
@@ -73,7 +78,7 @@ BorderTab.getCelda(0,3).AddElem(CancelButton);
 BorderTab.getCelda(0,4).AddElem(Status);
 BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
 BorderTab.getCelda(0,4).AddElem(HHelp);
-Table FormTab=new Table(4, 5, 0);
+Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
 FormTab.setCSSClass("FFormularios");
@@ -120,14 +125,16 @@ if (Rec!=null && Rec.getAttr(PDFolders.fACL)!=null)
     if (Val!=null)
          ListACL.setValue(Val);
     }
-FormTab.getCelda(0,0).setWidth(-25);
+FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Folder_Title")+":"));
-FormTab.getCelda(2,1).AddElem(FoldTitle);
+FormTab.getCelda(2,1).AddElem(new FieldComboOper(COMPTITLE));
+FormTab.getCelda(3,1).AddElem(FoldTitle);
 FormTab.getCelda(1,2).AddElem(new Element(TT("Folder_Type")+":"));
-FormTab.getCelda(2,2).AddElem(ListTip);
+FormTab.getCelda(3,2).AddElem(ListTip);
 FormTab.getCelda(1,3).AddElem(new Element(TT("Folder_ACL")+":"));
-FormTab.getCelda(2,3).AddElem(ListACL);
+FormTab.getCelda(2,3).AddElem(new FieldComboOper(COMPACL));
+FormTab.getCelda(3,3).AddElem(ListACL);
 FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");
 SubTCh.setCSSClass("FFormInputCheck");
