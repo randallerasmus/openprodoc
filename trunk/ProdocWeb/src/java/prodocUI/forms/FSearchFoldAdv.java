@@ -61,7 +61,7 @@ static final public String COMP="COMP__";
 public FSearchFoldAdv(HttpServletRequest Req, int pMode, Record pRec,String Destination, Cursor ListFold) throws PDException
 {
 super(Req, SParent.TT(Req,"Search_Folders"), pMode, pRec);
-AddJS("Types.js");
+AddJS("TypesSearch.js");
 AddJS("ThesTreeSel.js");
 HttpSession Sess=Req.getSession(true);
 Record Rec=(Record)Sess.getAttribute("SD_Rec");
@@ -108,7 +108,7 @@ if (Rec!=null && Rec.getAttr(PDFolders.fFOLDTYPE)!=null)
         {
         ListTip.setValue(Val);
         SParent.FillRec(Req, ListExcluded, Rec);
-        Element TabFields=ListTypeFolds.GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD);
+        Element TabFields=ListTypeFolds.GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD, true);
         BorderTab.getCelda(0,2).AddElem(TabFields);
         }
     }
