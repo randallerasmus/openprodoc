@@ -60,7 +60,7 @@ DriverGeneric PDSession=(DriverGeneric)Sess.getAttribute("PRODOC_SESS");
 String Typ=(String)Req.getParameter("Type");
 PDFolders F = new PDFolders(PDSession, Typ);
 Record Rec=F.getRecSum();
-Element TabFields=GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD);
+Element TabFields=GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD, false);
 out.println(TabFields.ToHtml(Sess));
 }
 //-----------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ static public String getUrlServlet()
 return("ListTypeFolds");
 }
 //-----------------------------------------------------------------------------------------------
-static public Element GenTabFields(HttpServletRequest Req, Record Rec, int pMode) throws PDException
+static public Element GenTabFields(HttpServletRequest Req, Record Rec, int pMode, boolean Search) throws PDException
 {
 Rec.initList();
 Attribute Attr=Rec.nextAttr();
@@ -99,6 +99,7 @@ if (FL.isEmpty())
     {
     return(new Element(" "));
     }
+boolean IsSearch=SParent.getIsSearch(Req) || Search;
 Table AditionFieldsTab=new Table(5, FL.size(), 0);
 AditionFieldsTab.setWidth(-100);
 AditionFieldsTab.setCellPadding(5);
@@ -170,7 +171,8 @@ for (int i = 0; i < FL.size(); i++)
         }
     if (pMode==FMantFoldAdv.DELMOD || pMode==FMantFoldAdv.EDIMOD && !Attr.isModifAllowed())
         FieldHtml.setActivado(false);
-    AditionFieldsTab.getCelda(2,i).AddElem(new FieldComboOper(FSearchFoldAdv.COMP+Attr.getName()));
+    if (IsSearch)
+        AditionFieldsTab.getCelda(2,i).AddElem(new FieldComboOper(FSearchFoldAdv.COMP+Attr.getName()));
     AditionFieldsTab.getCelda(3,i).AddElem(FieldHtml);
     }
 return(AditionFieldsTab);

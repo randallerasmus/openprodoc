@@ -49,6 +49,10 @@ final static private String ListExcluded=PDDocs.fDOCTYPE+"/"+PDDocs.fPARENTID+"/
                         +"/"+PDDocs.fLOCKEDBY+"/"+PDDocs.fVERSION+"/"+PDDocs.fPURGEDATE
                         +"/"+PDDocs.fREPOSIT+"/"+PDDocs.fSTATUS;
 
+static final private String COMPTITLE="COMP__"+PDDocs.fTITLE;
+static final private String COMPACL="COMP__"+PDDocs.fACL;
+static final public String COMP="COMP__";
+
 /** Creates a new instance of FMantFoldAdv
  * @param Req
  * @param pMode
@@ -60,7 +64,7 @@ final static private String ListExcluded=PDDocs.fDOCTYPE+"/"+PDDocs.fPARENTID+"/
 public FSearchDocAdv(HttpServletRequest Req, int pMode, Record pRec,String Destination, Cursor ListDocs) throws PDException
 {
 super(Req, SParent.TT(Req,"Search_Documents"), pMode, pRec);
-AddJS("Types.js");
+AddJS("TypesSearch.js");
 AddJS("ThesTreeSel.js");
 HttpSession Sess=Req.getSession(true);
 Record Rec=(Record)Sess.getAttribute("SD_Rec");
@@ -107,7 +111,7 @@ if (Rec!=null && Rec.getAttr(PDDocs.fDOCTYPE)!=null)
         {
         ListTip.setValue(Val);
         SParent.FillRec(Req, ListExcluded, Rec);
-        Element TabFields=ListTypeDocs.GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD);
+        Element TabFields=ListTypeDocs.GenTabFields(Req, Rec, FMantFoldAdv.ADDMOD, true);
         BorderTab.getCelda(0,2).AddElem(TabFields);
         }
     }
@@ -124,14 +128,16 @@ if (Rec!=null  && Rec.getAttr(PDDocs.fACL)!=null)
     if (Val!=null)
          ListACL.setValue(Val);
     }
-FormTab.getCelda(0,0).setWidth(-25);
+FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Document_Title")+":"));
-FormTab.getCelda(2,1).AddElem(FoldTitle);
+FormTab.getCelda(2,1).AddElem(new FieldComboOper(COMPTITLE));
+FormTab.getCelda(3,1).AddElem(FoldTitle);
 FormTab.getCelda(1,2).AddElem(new Element(TT("Document_type")+":"));
-FormTab.getCelda(2,2).AddElem(ListTip);
+FormTab.getCelda(3,2).AddElem(ListTip);
 FormTab.getCelda(1,3).AddElem(new Element(TT("Document_ACL")+":"));
-FormTab.getCelda(2,3).AddElem(ListACL);
+FormTab.getCelda(2,3).AddElem(new FieldComboOper(COMPACL));
+FormTab.getCelda(3,3).AddElem(ListACL);
 FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");
 SubTCh.setMensStatus(TT("When_checked_includes_subtypes_of_document_in_results"));

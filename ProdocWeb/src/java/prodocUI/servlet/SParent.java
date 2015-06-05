@@ -944,9 +944,7 @@ Sess.setAttribute("SD_Rec", Rec);
  *
  * @param Req
  * @param Cond
- * @param SubT
  * @param SubF
- * @param Vers
  * @param actFolderId
  * @param Ord
  * @param Rec
@@ -1049,6 +1047,16 @@ return (" @"+getSessOPD(Req).getUser().getName()+"("+getSessOPD(Req).getUser().g
     {
     return ("");
     }
+}
+//----------------------------------------------------------   
+
+public static boolean getIsSearch(HttpServletRequest Req)
+{
+String IsSearch=Req.getParameter("IsSearch");
+if (IsSearch==null || !IsSearch.equals("1"))
+    return(false);
+else
+    return(true);
 }
 //-----------------------------------------------------------
 }
