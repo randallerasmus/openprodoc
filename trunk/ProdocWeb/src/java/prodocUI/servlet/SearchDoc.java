@@ -28,6 +28,7 @@ import prodoc.DriverGeneric;
 import prodoc.PDException;
 import prodoc.PDDocs;
 import prodoc.Record;
+import prodocUI.forms.FSearchFoldAdv;
 
 /**
  *
@@ -121,7 +122,8 @@ while (Attr!=null)
     String Val=Req.getParameter(Attr.getName());
     if (!(Val == null || Val.length()==0 || Val != null && Attr.getName().equals(PDDocs.fACL) && Val.equals("None")))
         {
-        Cond.addCondition(SParent.FillCond(Req, Attr, Val));
+        int Oper=Integer.parseInt(Req.getParameter(FSearchFoldAdv.COMP+Attr.getName()));
+        Cond.addCondition(SParent.FillCond(Req, Attr, Val, Oper));
         }
     Attr=Rec.nextAttr();
     }
