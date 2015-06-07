@@ -32,6 +32,7 @@ import prodoc.PDException;
 import prodoc.PDFolders;
 import prodoc.Record;
 import prodocServ.ListTypeFolds;
+import prodocUI.servlet.ExportFoldCSV;
 import prodocUI.servlet.SParent;
 
 /**
@@ -78,6 +79,13 @@ BorderTab.getCelda(0,3).AddElem(CancelButton);
 BorderTab.getCelda(0,4).AddElem(Status);
 BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
 BorderTab.getCelda(0,4).AddElem(HHelp);
+if (ListFold!=null) //second time
+    {
+    BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
+    HiperlinkImag ExportCsv=new HiperlinkImag("img/"+getStyle()+"expCSV.png" , "CSV Export", ExportFoldCSV.getUrlServlet(), "CSV Export");
+    ExportCsv.setTarget("_blank");
+    BorderTab.getCelda(0,4).AddElem(ExportCsv);
+    }
 Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);

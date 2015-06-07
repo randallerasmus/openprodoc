@@ -31,6 +31,8 @@ import prodoc.PDDocs;
 import prodoc.PDException;
 import prodoc.Record;
 import prodocServ.ListTypeDocs;
+import prodocUI.servlet.ExportDocCSV;
+import prodocUI.servlet.ExportFoldCSV;
 import prodocUI.servlet.SParent;
 import prodocUI.servlet.SendDoc;
 
@@ -81,6 +83,14 @@ BorderTab.getCelda(0,3).AddElem(CancelButton);
 BorderTab.getCelda(0,4).AddElem(Status);
 BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
 BorderTab.getCelda(0,4).AddElem(HHelp);
+if (ListDocs!=null) //second time
+    {
+    BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
+    HiperlinkImag ExportCsv=new HiperlinkImag("img/"+getStyle()+"expCSV.png" , "CSV Export", ExportDocCSV.getUrlServlet(), "CSV Export");
+    ExportCsv.setTarget("_blank");
+    BorderTab.getCelda(0,4).AddElem(ExportCsv);
+    }
+
 Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
@@ -158,8 +168,7 @@ if (Sess.getAttribute("SD_SubF")!=null)
         SubFCh.setValue("1");
     }
 FormTab.getCelda(2,4).AddElem(SubFCh);
-FormTab.getCelda(2,4).AddElem(Element.getEspacio2());
-FormTab.getCelda(2,4).AddElem(new Element(TT("Versions")+":"));
+FormTab.getCelda(3,4).AddElem(new Element(TT("Versions")+":"));
 FieldCheck VersCh=new FieldCheck("Versions");
 VersCh.setCSSClass("FFormInputCheck");
 VersCh.setMensStatus(TT("When_checked_includes_all_versions_of_document_in_results"));
@@ -168,7 +177,7 @@ if (Sess.getAttribute("SD_Vers")!=null)
     if ((Boolean) Sess.getAttribute("SD_Vers"))
         VersCh.setValue("1");
     }
-FormTab.getCelda(2,4).AddElem(VersCh);
+FormTab.getCelda(3,4).AddElem(VersCh);
 Form FolderForm=new Form(Destination+"?Read=1","FormVal");
 BorderTab.getCelda(0,1).AddElem(FormTab);
 FolderForm.AddElem(BorderTab);
