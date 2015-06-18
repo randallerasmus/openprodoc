@@ -22,6 +22,7 @@ package prodocUI.forms;
 
 import html.*;
 import java.util.Date;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import prodoc.Attribute;
@@ -32,7 +33,6 @@ import prodoc.PDException;
 import prodoc.Record;
 import prodocServ.ListTypeDocs;
 import prodocUI.servlet.ExportDocCSV;
-import prodocUI.servlet.ExportFoldCSV;
 import prodocUI.servlet.SParent;
 import prodocUI.servlet.SendDoc;
 
@@ -141,12 +141,21 @@ if (Rec!=null  && Rec.getAttr(PDDocs.fACL)!=null)
 FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Document_Title")+":"));
-FormTab.getCelda(2,1).AddElem(new FieldComboOper(COMPTITLE));
+FieldComboOper TitleOper=new FieldComboOper(COMPTITLE);
+HashMap<String, String> OperComp=SParent.getOperMap(Req);
+String Oper=OperComp.get(COMPTITLE);
+if (Oper!=null)
+   TitleOper.setValue(Oper);
+FormTab.getCelda(2,1).AddElem(TitleOper);
 FormTab.getCelda(3,1).AddElem(FoldTitle);
 FormTab.getCelda(1,2).AddElem(new Element(TT("Document_type")+":"));
 FormTab.getCelda(3,2).AddElem(ListTip);
 FormTab.getCelda(1,3).AddElem(new Element(TT("Document_ACL")+":"));
-FormTab.getCelda(2,3).AddElem(new FieldComboOper(COMPACL));
+FieldComboOper ACLOper=new FieldComboOper(COMPACL);
+Oper=OperComp.get(COMPACL);
+if (Oper!=null)
+   ACLOper.setValue(Oper);
+FormTab.getCelda(2,3).AddElem(ACLOper);
 FormTab.getCelda(3,3).AddElem(ListACL);
 FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");

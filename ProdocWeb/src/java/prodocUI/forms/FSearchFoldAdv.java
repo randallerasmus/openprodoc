@@ -22,6 +22,7 @@ package prodocUI.forms;
 
 import html.*;
 import java.util.Date;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import prodoc.Attribute;
@@ -33,6 +34,7 @@ import prodoc.PDFolders;
 import prodoc.Record;
 import prodocServ.ListTypeFolds;
 import prodocUI.servlet.ExportFoldCSV;
+import prodocUI.servlet.ReportFolds;
 import prodocUI.servlet.SParent;
 
 /**
@@ -85,6 +87,9 @@ if (ListFold!=null) //second time
     HiperlinkImag ExportCsv=new HiperlinkImag("img/"+getStyle()+"expCSV.png" , "CSV Export", ExportFoldCSV.getUrlServlet(), "CSV Export");
     ExportCsv.setTarget("_blank");
     BorderTab.getCelda(0,4).AddElem(ExportCsv);
+    BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
+    HiperlinkImag Reports=new HiperlinkImag("img/"+getStyle()+"Report.png" , "Reports", ReportFolds.getUrlServlet(), "Reports");
+    BorderTab.getCelda(0,4).AddElem(Reports);
     }
 Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
@@ -136,12 +141,21 @@ if (Rec!=null && Rec.getAttr(PDFolders.fACL)!=null)
 FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Folder_Title")+":"));
-FormTab.getCelda(2,1).AddElem(new FieldComboOper(COMPTITLE));
+FieldComboOper TitleOper=new FieldComboOper(COMPTITLE);
+FormTab.getCelda(2,1).AddElem(TitleOper);
+HashMap<String, String> OperComp=SParent.getOperMap(Req);
+String Oper=OperComp.get(COMPTITLE);
+if (Oper!=null)
+   TitleOper.setValue(Oper);
 FormTab.getCelda(3,1).AddElem(FoldTitle);
 FormTab.getCelda(1,2).AddElem(new Element(TT("Folder_Type")+":"));
 FormTab.getCelda(3,2).AddElem(ListTip);
 FormTab.getCelda(1,3).AddElem(new Element(TT("Folder_ACL")+":"));
-FormTab.getCelda(2,3).AddElem(new FieldComboOper(COMPACL));
+FieldComboOper ACLOper=new FieldComboOper(COMPACL);
+Oper=OperComp.get(COMPACL);
+if (Oper!=null)
+   ACLOper.setValue(Oper);
+FormTab.getCelda(2,3).AddElem(ACLOper);
 FormTab.getCelda(3,3).AddElem(ListACL);
 FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");

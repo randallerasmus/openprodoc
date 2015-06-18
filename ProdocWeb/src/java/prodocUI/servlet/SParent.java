@@ -885,8 +885,8 @@ Sess.setAttribute("ThesLastForm", LISTDOC_FORM);
 }
 //--------------------------------------------------------------
 /**
- *
- * @param Req
+ * Cleans all the conditions related to search of documents
+ * @param Req HttpServletRequest
  */
 protected void CleanConds(HttpServletRequest Req)
 {
@@ -899,11 +899,12 @@ Sess.setAttribute("SD_Vers", null);
 Sess.setAttribute("SD_actFolderId", null);
 Sess.setAttribute("SD_Ord", null);
 Sess.setAttribute("SD_Rec", null);
+Sess.setAttribute("ST_OperComp", null);
 }
 //-----------------------------------------------------------------------------------------------
 /**
- *
- * @param Req
+ * Cleans all the conditions related to search of thesaurus
+ * @param Req HttpServletRequest
  */
 protected void CleanCondsThes(HttpServletRequest Req)
 {
@@ -914,6 +915,24 @@ Sess.setAttribute("ST_actFolderId", null);
 Sess.setAttribute("ST_Ord", null);
 Sess.setAttribute("ST_Rec", null);
 }
+//-----------------------------------------------------------------------------------------------
+/**
+ * Returns a HashMap containing the operators for a Search form. Creates a new one if needed
+ * @param Req HttpServletRequest
+ * @return a HashMap containing the operators
+ */
+static public HashMap<String, String> getOperMap(HttpServletRequest Req)
+{
+HttpSession Sess=Req.getSession(true);
+HashMap<String, String> OperComp=(HashMap<String, String>)Sess.getAttribute("ST_OperComp");
+if (OperComp==null)
+    {
+    OperComp=new HashMap<String, String>();
+    Sess.setAttribute("ST_OperComp", OperComp);
+    }
+return(OperComp);
+}
+
 //-----------------------------------------------------------------------------------------------
 /**
  *

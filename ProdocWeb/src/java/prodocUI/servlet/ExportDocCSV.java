@@ -30,7 +30,6 @@ import prodoc.Conditions;
 import prodoc.Cursor;
 import prodoc.PDDocs;
 import prodoc.PDException;
-import prodoc.PDFolders;
 import prodoc.PDThesaur;
 import prodoc.Record;
 import static prodocUI.servlet.SParent.ShowMessage;
@@ -45,6 +44,7 @@ public class ExportDocCSV extends SParent
 @Override
 protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 {
+response.setCharacterEncoding("UTF-8");
 PrintWriter PW = response.getWriter();
 try {
 HttpSession Sess=request.getSession(true);
