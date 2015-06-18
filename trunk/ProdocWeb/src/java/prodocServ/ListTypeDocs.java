@@ -165,7 +165,13 @@ for (int i = 0; i < FL.size(); i++)
     if (pMode==FMantDocAdv.DELMOD || pMode==FMantDocAdv.EDIMOD && !Attr.isModifAllowed())
         FieldHtml.setActivado(false);
     if (IsSearch)
-        AditionFieldsTab.getCelda(2,i).AddElem(new FieldComboOper(FSearchFoldAdv.COMP+Attr.getName()));
+        {
+        FieldComboOper OperCont=new FieldComboOper(FSearchFoldAdv.COMP+Attr.getName());
+        String OperVal=SParent.getOperMap(Req).get(FSearchFoldAdv.COMP+Attr.getName());
+        if (OperVal!=null)
+            OperCont.setValue(OperVal);
+        AditionFieldsTab.getCelda(2,i).AddElem(OperCont);
+        }
     AditionFieldsTab.getCelda(3,i).AddElem(FieldHtml);
     }
 return(AditionFieldsTab);

@@ -183,12 +183,20 @@
         <servlet-class>prodocServ.Oper</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExportCSV</servlet-name>
+        <servlet-name>ExportFoldCSV</servlet-name>
         <servlet-class>prodocUI.servlet.ExportFoldCSV</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportDocCSV</servlet-name>
         <servlet-class>prodocUI.servlet.ExportDocCSV</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReportDocs</servlet-name>
+        <servlet-class>prodocUI.servlet.ReportDocs</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReportFolds</servlet-name>
+        <servlet-class>prodocUI.servlet.ReportFolds</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SParent</servlet-name>
@@ -371,12 +379,20 @@
         <url-pattern>/Oper</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExportCSV</servlet-name>
-        <url-pattern>/ExportCSV</url-pattern>
+        <servlet-name>ExportFoldCSV</servlet-name>
+        <url-pattern>/ExportFoldCSV</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExportDocCSV</servlet-name>
         <url-pattern>/ExportDocCSV</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReportDocs</servlet-name>
+        <url-pattern>/ReportDocs</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReportFolds</servlet-name>
+        <url-pattern>/ReportFolds</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

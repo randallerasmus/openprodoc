@@ -33,12 +33,13 @@ import prodoc.PDFolders;
 import prodoc.PDThesaur;
 import prodoc.Record;
 import static prodocUI.servlet.SParent.ShowMessage;
+import static prodocUI.servlet.SParent.getSessOPD;
 
 /**
  *
  * @author Joaquin
  */
-public class ExportFoldCSV extends SParent
+public class ReportDocs extends SParent
 {
 @Override
 protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -119,12 +120,12 @@ PW.close();
 @Override
 public String getServletInfo()
 {
-return "Export Fold results in CSV format Servlet";
+return "Reports Folds is selected report format";
 }
 //-----------------------------------------------------------------------------------------------
 static public String getUrlServlet()
 {
-return("ExportFoldCSV");
+return("ReportDocs");
 }
 //-----------------------------------------------------------------------------------------------
 }

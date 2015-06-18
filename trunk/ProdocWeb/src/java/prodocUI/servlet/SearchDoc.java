@@ -120,9 +120,11 @@ while (Attr!=null)
         continue;
         }
     String Val=Req.getParameter(Attr.getName());
+    String Comp=Req.getParameter(FSearchFoldAdv.COMP+Attr.getName());
+    SParent.getOperMap(Req).put(FSearchFoldAdv.COMP+Attr.getName(), Comp);
     if (!(Val == null || Val.length()==0 || Val != null && Attr.getName().equals(PDDocs.fACL) && Val.equals("None")))
         {
-        int Oper=Integer.parseInt(Req.getParameter(FSearchFoldAdv.COMP+Attr.getName()));
+        int Oper=Integer.parseInt(Comp);
         Cond.addCondition(SParent.FillCond(Req, Attr, Val, Oper));
         }
     Attr=Rec.nextAttr();
