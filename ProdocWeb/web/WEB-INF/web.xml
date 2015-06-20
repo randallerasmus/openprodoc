@@ -198,6 +198,10 @@
         <servlet-name>ReportFolds</servlet-name>
         <servlet-class>prodocUI.servlet.ReportFolds</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GenReport</servlet-name>
+        <servlet-class>prodocUI.servlet.GenReport</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SParent</servlet-name>
         <url-pattern>/SParent</url-pattern>
@@ -393,6 +397,10 @@
     <servlet-mapping>
         <servlet-name>ReportFolds</servlet-name>
         <url-pattern>/ReportFolds</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenReport</servlet-name>
+        <url-pattern>/GenReport</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
