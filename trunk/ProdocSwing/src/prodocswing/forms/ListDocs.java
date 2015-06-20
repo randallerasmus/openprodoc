@@ -520,8 +520,18 @@ for (int NumRow = 0; NumRow < TM.getRowCount(); NumRow++)
         Attribute At=r.nextAttr(); 
         if (At.getType()==Attribute.tTHES)
             {
-            UseTerm.Load((String)At.getValue());
-            PW.print("\""+UseTerm.getName()+"\"");
+            if (At.getValue()!=null && ((String)At.getValue()).length()!=0)
+                {
+                try {
+                UseTerm.Load((String)At.getValue());
+                PW.print("\""+UseTerm.getName()+"\"");
+                } catch (PDException ex)
+                    {
+                    PW.print("\"\"");
+                    }
+                }
+            else
+                PW.print("\"\"");
             }
         else
             PW.print(At.ToCSV());
