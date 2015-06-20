@@ -22,7 +22,6 @@
 package prodocUI.servlet;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import prodoc.Attribute;
 import prodoc.Conditions;

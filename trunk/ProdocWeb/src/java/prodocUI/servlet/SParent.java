@@ -1078,5 +1078,9 @@ else
     return(true);
 }
 //-----------------------------------------------------------
+static String getIO_OSFolder()
+{
+return(System.getProperty("java.io.tmpdir"));
+}
 }
 

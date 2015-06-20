@@ -49,6 +49,7 @@ if (!Reading(Req))
     out.println(f.ToHtml(Req.getSession()));
     return;
     }
+GenListForm(Req, out, LISTDOC_FORM, null, null);
 } catch (PDException ex)
     {
     ShowMessage( Req,  out, SParent.TT(Req, ex.getLocalizedMessage()));

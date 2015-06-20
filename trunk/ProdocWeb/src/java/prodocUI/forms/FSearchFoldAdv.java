@@ -49,9 +49,9 @@ public FieldText FoldTitle;
 
 private static final String ListExcluded=PDFolders.fPARENTID+"/"+PDFolders.fPDID+"/"+PDFolders.fPDAUTOR+"/"+PDFolders.fPDDATE;
 
-static final private String COMPTITLE="COMP__"+PDDocs.fTITLE;
-static final private String COMPACL="COMP__"+PDDocs.fACL;
 static final public String COMP="COMP__";
+static final private String COMPTITLE=COMP+PDDocs.fTITLE;
+static final private String COMPACL=COMP+PDDocs.fACL;
 
 /** Creates a new instance of FMantFoldAdv
  * @param Req
