@@ -98,7 +98,7 @@ super(pDrv,getTableName());
  * generates a report with the current PDId
  * @param pIdParent Parent of the "cursor". Can be null
  * @param pListDocs Cursor with the list of docs
- * @param VectRec List of records to be extracted
+ * @param pVectRec
  * @param pRecsPag Number oc record by page
  * @param pPagsDoc Number of pages by Archive
  * @param OSFolder Folder for saving reports
@@ -696,5 +696,15 @@ if (Attr!=null)
     }
 return(true);
 }    
+//-------------------------------------------------------------------------
+public int getDocsPerPage() throws PDException
+{
+return(Integer)getRecSum().getAttr(PDReport.fDOCSPAGE).getValue();    
+}
+//-------------------------------------------------------------------------
+public int getPagesPerFile() throws PDException
+{
+return(Integer)getRecSum().getAttr(PDReport.fPAGESDOC).getValue();   
+}
 //-------------------------------------------------------------------------
 }
