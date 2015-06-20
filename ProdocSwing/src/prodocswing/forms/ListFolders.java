@@ -27,13 +27,9 @@ package prodocswing.forms;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 import javax.swing.JDialog;
-import javax.swing.RowSorter;
 import prodoc.Attribute;
-import prodoc.Condition;
-import prodoc.Conditions;
 import prodoc.Cursor;
 import prodoc.PDException;
 import prodoc.PDFolders;
@@ -41,7 +37,6 @@ import prodoc.PDReport;
 import prodoc.PDThesaur;
 import prodoc.Record;
 import prodocswing.PDTableModel;
-import static prodocswing.forms.MainWin.WaitCur;
 
 /**
  *
@@ -389,8 +384,18 @@ for (int NumRow = 0; NumRow < TM.getRowCount(); NumRow++)
         Attribute At=r.nextAttr(); 
         if (At.getType()==Attribute.tTHES)
             {
-            UseTerm.Load((String)At.getValue());
-            PW.print("\""+UseTerm.getName()+"\"");
+            if (At.getValue()!=null && ((String)At.getValue()).length()!=0)
+                {
+                try {
+                UseTerm.Load((String)At.getValue());
+                PW.print("\""+UseTerm.getName()+"\"");
+                } catch (PDException ex)
+                    {
+                    PW.print("\"\"");
+                    }
+                }
+            else
+                PW.print("\"\"");
             }
         else
             PW.print(At.ToCSV());
