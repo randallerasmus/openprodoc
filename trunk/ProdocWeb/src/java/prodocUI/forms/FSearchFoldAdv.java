@@ -28,7 +28,6 @@ import javax.servlet.http.HttpSession;
 import prodoc.Attribute;
 import prodoc.Cursor;
 import prodoc.DriverGeneric;
-import prodoc.PDDocs;
 import prodoc.PDException;
 import prodoc.PDFolders;
 import prodoc.Record;
@@ -46,12 +45,14 @@ public class FSearchFoldAdv extends FFormBase
 FieldCombo ListTip;
 FieldCombo ListACL;
 public FieldText FoldTitle;
+public FieldText FoldPDid;
 
 private static final String ListExcluded=PDFolders.fPARENTID+"/"+PDFolders.fPDID+"/"+PDFolders.fPDAUTOR+"/"+PDFolders.fPDDATE;
 
 static final public String COMP="COMP__";
-static final private String COMPTITLE=COMP+PDDocs.fTITLE;
-static final private String COMPACL=COMP+PDDocs.fACL;
+static final private String COMPTITLE=COMP+PDFolders.fTITLE;
+static final private String COMPACL=COMP+PDFolders.fACL;
+static final private String COMPPDID=COMP+PDFolders.fPDID;
 
 /** Creates a new instance of FMantFoldAdv
  * @param Req
@@ -91,7 +92,7 @@ if (ListFold!=null) //second time
     HiperlinkImag Reports=new HiperlinkImag("img/"+getStyle()+"Report.png" , "Reports", ReportFolds.getUrlServlet(), "Reports");
     BorderTab.getCelda(0,4).AddElem(Reports);
     }
-Table FormTab=new Table(5, 5, 0);
+Table FormTab=new Table(5, 6, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
 FormTab.setCSSClass("FFormularios");
@@ -107,6 +108,18 @@ if (Rec!=null && Rec.getAttr(PDFolders.fTITLE)!=null)
     Val=(String)Rec.getAttr(PDFolders.fTITLE).getValue();
     if (Val!=null)
         FoldTitle.setValue(Val);
+    }
+Attr=TmpFold.getRecord().getAttr(PDFolders.fPDID);
+FoldPDid=new FieldText(Attr.getName());
+FoldPDid.setMaxSize(Attr.getLongStr());
+FoldPDid.setCSSClass("FFormInput");
+FoldPDid.setMensStatus(TT(Attr.getDescription()));
+Val=null;
+if (Rec!=null && Rec.getAttr(PDFolders.fPDID)!=null)
+    {
+    Val=(String)Rec.getAttr(PDFolders.fPDID).getValue();
+    if (Val!=null)
+        FoldPDid.setValue(Val);
     }
 Attr=TmpFold.getRecord().getAttr(PDFolders.fFOLDTYPE);
 ListTip=new FieldCombo(Attr.getName());
@@ -140,11 +153,18 @@ if (Rec!=null && Rec.getAttr(PDFolders.fACL)!=null)
     }
 FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
+FormTab.getCelda(1,0).AddElem(new Element(TT("Id")+":"));
+FieldComboOper IdOper=new FieldComboOper(COMPPDID);
+FormTab.getCelda(2,0).AddElem(IdOper);
+HashMap<String, String> OperComp=SParent.getOperMap(Req);
+String Oper=OperComp.get(COMPPDID);
+if (Oper!=null)
+   IdOper.setValue(Oper);
+FormTab.getCelda(3,0).AddElem(FoldPDid);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Folder_Title")+":"));
 FieldComboOper TitleOper=new FieldComboOper(COMPTITLE);
 FormTab.getCelda(2,1).AddElem(TitleOper);
-HashMap<String, String> OperComp=SParent.getOperMap(Req);
-String Oper=OperComp.get(COMPTITLE);
+Oper=OperComp.get(COMPTITLE);
 if (Oper!=null)
    TitleOper.setValue(Oper);
 FormTab.getCelda(3,1).AddElem(FoldTitle);

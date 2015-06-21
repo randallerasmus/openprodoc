@@ -30,6 +30,7 @@ import prodoc.Cursor;
 import prodoc.DriverGeneric;
 import prodoc.PDDocs;
 import prodoc.PDException;
+import prodoc.PDFolders;
 import prodoc.Record;
 import prodocServ.ListTypeDocs;
 import prodocUI.servlet.ExportDocCSV;
@@ -45,16 +46,18 @@ public class FSearchDocAdv extends FFormBase
 {
 FieldCombo ListTip;
 FieldCombo ListACL;
-public FieldText FoldTitle;
+public FieldText DocTitle;
+public FieldText DocPDid;
 
 final static private String ListExcluded=PDDocs.fDOCTYPE+"/"+PDDocs.fPARENTID+"/"+PDDocs.fPDID
                         +"/"+PDDocs.fPDAUTOR+"/"+PDDocs.fPDDATE
                         +"/"+PDDocs.fLOCKEDBY+"/"+PDDocs.fVERSION+"/"+PDDocs.fPURGEDATE
                         +"/"+PDDocs.fREPOSIT+"/"+PDDocs.fSTATUS;
 
-static final private String COMPTITLE="COMP__"+PDDocs.fTITLE;
-static final private String COMPACL="COMP__"+PDDocs.fACL;
 static final public String COMP="COMP__";
+static final private String COMPTITLE=COMP+PDDocs.fTITLE;
+static final private String COMPACL=COMP+PDDocs.fACL;
+static final private String COMPPDID=COMP+PDDocs.fPDID;
 
 /** Creates a new instance of FMantFoldAdv
  * @param Req
@@ -100,16 +103,28 @@ FormTab.setWidth(-100);
 FormTab.setCSSClass("FFormularios");
 PDDocs TmpDoc=new PDDocs(Session);
 Attribute Attr=TmpDoc.getRecord().getAttr(PDDocs.fTITLE);
-FoldTitle=new FieldText(Attr.getName());
-FoldTitle.setMaxSize(Attr.getLongStr());
-FoldTitle.setCSSClass("FFormInput");
-FoldTitle.setMensStatus(TT(Attr.getDescription()));
+DocTitle=new FieldText(Attr.getName());
+DocTitle.setMaxSize(Attr.getLongStr());
+DocTitle.setCSSClass("FFormInput");
+DocTitle.setMensStatus(TT(Attr.getDescription()));
 String Val=null;
 if (Rec!=null && Rec.getAttr(PDDocs.fTITLE)!=null)
     {
     Val=(String)Rec.getAttr(PDDocs.fTITLE).getValue();
     if (Val!=null)
-        FoldTitle.setValue(Val);
+        DocTitle.setValue(Val);
+    }
+Attr=TmpDoc.getRecord().getAttr(PDFolders.fPDID);
+DocPDid=new FieldText(Attr.getName());
+DocPDid.setMaxSize(Attr.getLongStr());
+DocPDid.setCSSClass("FFormInput");
+DocPDid.setMensStatus(TT(Attr.getDescription()));
+Val=null;
+if (Rec!=null && Rec.getAttr(PDDocs.fPDID)!=null)
+    {
+    Val=(String)Rec.getAttr(PDDocs.fPDID).getValue();
+    if (Val!=null)
+        DocPDid.setValue(Val);
     }
 Attr=TmpDoc.getRecord().getAttr(PDDocs.fDOCTYPE);
 ListTip=new FieldCombo(Attr.getName());
@@ -143,14 +158,22 @@ if (Rec!=null  && Rec.getAttr(PDDocs.fACL)!=null)
     }
 FormTab.getCelda(0,0).setWidth(-15);
 FormTab.getCelda(0,0).setHeight(30);
+FormTab.getCelda(1,0).AddElem(new Element(TT("Id")+":"));
+FieldComboOper IdOper=new FieldComboOper(COMPPDID);
+FormTab.getCelda(2,0).AddElem(IdOper);
+HashMap<String, String> OperComp=SParent.getOperMap(Req);
+String Oper=OperComp.get(COMPPDID);
+if (Oper!=null)
+   IdOper.setValue(Oper);
+FormTab.getCelda(3,0).AddElem(DocPDid);
 FormTab.getCelda(1,1).AddElem(new Element(TT("Document_Title")+":"));
 FieldComboOper TitleOper=new FieldComboOper(COMPTITLE);
-HashMap<String, String> OperComp=SParent.getOperMap(Req);
-String Oper=OperComp.get(COMPTITLE);
+OperComp=SParent.getOperMap(Req);
+Oper=OperComp.get(COMPTITLE);
 if (Oper!=null)
    TitleOper.setValue(Oper);
 FormTab.getCelda(2,1).AddElem(TitleOper);
-FormTab.getCelda(3,1).AddElem(FoldTitle);
+FormTab.getCelda(3,1).AddElem(DocTitle);
 FormTab.getCelda(1,2).AddElem(new Element(TT("Document_type")+":"));
 FormTab.getCelda(3,2).AddElem(ListTip);
 FormTab.getCelda(1,3).AddElem(new Element(TT("Document_ACL")+":"));
