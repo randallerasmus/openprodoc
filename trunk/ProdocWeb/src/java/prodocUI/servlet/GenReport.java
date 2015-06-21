@@ -20,12 +20,16 @@
 package prodocUI.servlet;
 
 import html.Page;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import prodoc.Condition;
@@ -104,7 +108,7 @@ else
     else
         F = new PDDocs(PDSession, FType);
     boolean Vers=(Boolean)Sess.getAttribute("SD_Vers");
-    F.Search(FType, Conds, SubT, SubF, Vers, actFolderId, Ord);
+    Cur=F.Search(FType, Conds, SubT, SubF, Vers, actFolderId, Ord);
     }
 PDReport Rep=new PDReport(PDSession);
 Rep.LoadFull(Id);
@@ -115,14 +119,31 @@ if (GeneratedRep.size()==1)
     File2Send=GeneratedRep.get(0);
     PDMimeType mt=new PDMimeType(PDSession);
     mt.Load(Rep.getMimeType());
-    response.setContentType(mt.getMimeCode());
-    response.setCharacterEncoding("UTF-8");
     response.setHeader("Content-disposition", "inline; filename=" + Rep.getName());    
+    response.setContentType(mt.getMimeCode()+";charset=UTF-8");
+    response.setCharacterEncoding("UTF-8");
     }
 else
     {
-    // compress in zip
-    File2Send="zip";
+    File2Send=GeneratedRep.get(0)+".zip";
+    ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(File2Send));
+    final int BUFFER = 64*1024;
+    byte Buffer[] = new byte[BUFFER];
+    for (String FileGen : GeneratedRep)
+        {
+        File f=new File(FileGen);
+        FileInputStream in = new FileInputStream(FileGen);
+        zout.putNextEntry(new ZipEntry(f.getName()));
+        int len;
+        while ((len = in.read(Buffer)) > 0) 
+            zout.write(Buffer, 0, len);
+        zout.closeEntry();
+        in.close();
+        f.delete();
+        }
+    zout.close();
+    response.setHeader("Content-disposition", "inline; filename=" + File2Send +".zip");    
+    response.setContentType("application/zip");
     }
 FileInputStream in=null;
 byte Buffer[]=new byte[64*1024];
@@ -145,6 +166,8 @@ f.delete();
     {
     if (out!=null)
         out.close();
+    if (in!=null)
+        in.close();
     throw e;
     }
 }

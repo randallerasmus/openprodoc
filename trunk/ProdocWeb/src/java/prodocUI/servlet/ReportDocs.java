@@ -32,6 +32,12 @@ import prodoc.PDException;
 import prodoc.PDFolders;
 import prodoc.PDThesaur;
 import prodoc.Record;
+import prodocUI.forms.FMantFold;
+import prodocUI.forms.FReportSel;
+import static prodocUI.servlet.ReportFolds.getUrlServlet;
+import static prodocUI.servlet.SParent.GenListForm;
+import static prodocUI.servlet.SParent.LISTDOC_FORM;
+import static prodocUI.servlet.SParent.Reading;
 import static prodocUI.servlet.SParent.ShowMessage;
 import static prodocUI.servlet.SParent.getSessOPD;
 
@@ -42,73 +48,19 @@ import static prodocUI.servlet.SParent.getSessOPD;
 public class ReportDocs extends SParent
 {
 @Override
-protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+protected void ProcessPage(HttpServletRequest Req, PrintWriter out) throws Exception
 {
-response.setCharacterEncoding("UTF-8");
-PrintWriter PW = response.getWriter();
 try {
-HttpSession Sess=request.getSession(true);
-PDFolders F = new PDFolders(getSessOPD(request));
-PDThesaur UseTerm=new PDThesaur(getSessOPD(request));    
-String FType=(String)Sess.getAttribute("SD_FType");
-Conditions Cond=(Conditions)Sess.getAttribute("SD_Cond");
-boolean SubT=(Boolean) Sess.getAttribute("SD_SubT");
-boolean SubF=(Boolean) Sess.getAttribute("SD_SubF");
-String actFolderId=(String) Sess.getAttribute("SD_actFolderId");
-Vector Ord=(Vector)Sess.getAttribute("SD_Ord");
-Cursor Res = F.Search(FType, Cond, SubT, SubF, actFolderId, Ord);
-boolean HeaderWrite=false;
-response.setContentType("text/csv; charset=UTF-8");
-response.setHeader("Content-disposition", "inline; filename=" + "ExportFold_"+Long.toHexString(Double.doubleToLongBits(Math.random()))+".csv");
-Record r=getSessOPD(request).NextRec(Res);
-while (r!=null)
+if (!Reading(Req))
     {
-    if (!HeaderWrite)
-        {
-        r.initList();
-        for (int NumAt = 0; NumAt < r.NumAttr(); NumAt++)
-            {    
-            Attribute At=r.nextAttr(); 
-            PW.print(At.getName());
-            if (NumAt<r.NumAttr()-1)
-               PW.print(";");
-            }
-        PW.println("");
-        HeaderWrite=true;
-        }
-    r.initList();
-    for (int NumAt = 0; NumAt < r.NumAttr(); NumAt++)
-        {
-        Attribute At=r.nextAttr(); 
-        if (At.getType()==Attribute.tTHES)
-            {
-            if (At.getValue()!=null && ((String)At.getValue()).length()!=0)
-                {
-                try {
-                UseTerm.Load((String)At.getValue());
-                PW.print("\""+UseTerm.getName()+"\"");
-                } catch (PDException ex)
-                    {
-                    PW.print("\"\"");
-                    }
-                }
-            else
-                PW.print("\"\"");
-            }
-        else
-            PW.print(At.ToCSV());
-        if (NumAt<r.NumAttr()-1)
-           PW.print(";");
-        }
-    PW.println("");
-    r=getSessOPD(request).NextRec(Res);
+    FReportSel f=new FReportSel(Req, FReportSel.MODEDOC, null, getUrlServlet());
+    out.println(f.ToHtml(Req.getSession()));
+    return;
     }
-response.flushBuffer();
-PW.close();
-} catch (Exception e)
+GenListForm(Req, out, LISTDOC_FORM, null, null);
+} catch (PDException ex)
     {
-    ShowMessage(request, PW, e.getLocalizedMessage());
-    AddLog(e.getMessage());
+    ShowMessage( Req,  out, SParent.TT(Req, ex.getLocalizedMessage()));
     }
 }
 //-----------------------------------------------------------------------------------------------
@@ -120,7 +72,7 @@ PW.close();
 @Override
 public String getServletInfo()
 {
-return "Reports Folds is selected report format";
+return "Reports ocs in selected report format";
 }
 //-----------------------------------------------------------------------------------------------
 static public String getUrlServlet()

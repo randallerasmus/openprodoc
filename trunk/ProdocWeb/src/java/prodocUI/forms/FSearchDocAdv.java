@@ -33,6 +33,7 @@ import prodoc.PDException;
 import prodoc.Record;
 import prodocServ.ListTypeDocs;
 import prodocUI.servlet.ExportDocCSV;
+import prodocUI.servlet.ReportDocs;
 import prodocUI.servlet.SParent;
 import prodocUI.servlet.SendDoc;
 
@@ -89,8 +90,10 @@ if (ListDocs!=null) //second time
     HiperlinkImag ExportCsv=new HiperlinkImag("img/"+getStyle()+"expCSV.png" , "CSV Export", ExportDocCSV.getUrlServlet(), "CSV Export");
     ExportCsv.setTarget("_blank");
     BorderTab.getCelda(0,4).AddElem(ExportCsv);
+    BorderTab.getCelda(0,4).AddElem(Element.getEspacio2());
+    HiperlinkImag Reports=new HiperlinkImag("img/"+getStyle()+"Report.png" , "Reports", ReportDocs.getUrlServlet(), "Reports");
+    BorderTab.getCelda(0,4).AddElem(Reports);
     }
-
 Table FormTab=new Table(5, 5, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
