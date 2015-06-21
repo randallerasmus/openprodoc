@@ -19,8 +19,6 @@
 
 package prodocUI.servlet;
 
-import html.Page;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,7 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import prodoc.Condition;
 import prodoc.Conditions;
 import prodoc.Cursor;
 import prodoc.DriverGeneric;
@@ -40,7 +37,6 @@ import prodoc.PDDocs;
 import prodoc.PDFolders;
 import prodoc.PDMimeType;
 import prodoc.PDReport;
-import prodoc.Record;
 import static prodocUI.servlet.SParent.ShowMessage;
 import static prodocUI.servlet.SParent.getSessOPD;
 
