@@ -45,7 +45,7 @@ protected void ProcessPage(HttpServletRequest Req, PrintWriter out) throws Excep
 try {
 if (!Reading(Req))
     {
-    FReportSel f=new FReportSel(Req, FMantFold.ADDMOD, null, getUrlServlet());
+    FReportSel f=new FReportSel(Req, FReportSel.MODEFOLD, null, getUrlServlet());
     out.println(f.ToHtml(Req.getSession()));
     return;
     }
@@ -64,7 +64,7 @@ GenListForm(Req, out, LISTDOC_FORM, null, null);
 @Override
 public String getServletInfo()
 {
-return "Reports Folds is selected report format";
+return "Reports Folds in selected report format";
 }
 //-----------------------------------------------------------------------------------------------
 static public String getUrlServlet()

@@ -21,19 +21,16 @@ package prodocUI.forms;
 
 
 import html.*;
-import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import prodoc.Attribute;
 import prodoc.Cursor;
 import prodoc.DriverGeneric;
 import prodoc.PDDocs;
 import prodoc.PDException;
-import prodoc.PDFolders;
 import prodoc.PDReport;
 import prodoc.Record;
 import prodocUI.servlet.GenReport;
 import prodocUI.servlet.SParent;
-import prodocUI.servlet.SendDoc;
 
 /**
  *
@@ -41,10 +38,12 @@ import prodocUI.servlet.SendDoc;
  */
 public class FReportSel extends FFormBase
 {
-final static public String NumDocsPageName="NUMDOCSPAGE";
-final static public String NumPagesFileName="NUMPAGESFILE";
-public FieldText NumDocsPage;
-public FieldText NumPagesFile;
+//final static public String NumDocsPageName="NUMDOCSPAGE";
+//final static public String NumPagesFileName="NUMPAGESFILE";
+//public FieldText NumDocsPage;
+//public FieldText NumPagesFile;
+final static public int MODEFOLD=0;
+final static public int MODEDOC=1;
 
 /** Creates a new instance of FormularioLogin
  * @param Req
@@ -107,7 +106,7 @@ while (NextDoc!=null)
     AttrD=NextDoc.getAttr(PDReport.fMIMETYPE);
     TabDocs.getCelda(3,Row).AddElem(new Element((String)AttrD.getValue()));
     DocId=(String)NextDoc.getAttr(PDDocs.fPDID).getValue();
-    HiperlinkImag hv=new html.HiperlinkImag("img/"+getStyle()+"Report.png" , "Report", GenReport.getUrlServlet()+"?Type=Fold&Id="+DocId, "");
+    HiperlinkImag hv=new html.HiperlinkImag("img/"+getStyle()+"Report.png" , "Report", GenReport.getUrlServlet()+"?Type="+(pMode==MODEFOLD?"Fold":"Doc")+"&Id="+DocId, "");
     hv.setTarget("_blank");
     TabDocs.getCelda(4,Row).setAlineacion(Element.CENTER); 
     TabDocs.getCelda(4,Row).AddElem(hv);
