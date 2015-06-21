@@ -20,9 +20,10 @@ package prodoc;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -204,7 +205,9 @@ FO=new FileOutputStream(OrigRep); // download the original
 this.getStream(FO);
 FO.close();
 Template=new File(OrigRep); // read the original
-BR=new BufferedReader(new FileReader(Template));
+//BR=new BufferedReader(new FileReader(Template));
+InputStreamReader in = new InputStreamReader(new FileInputStream(OrigRep), "UTF-8"); 
+BR=new BufferedReader(in);
 String Line=BR.readLine();
 while (Line!=null)
     {
