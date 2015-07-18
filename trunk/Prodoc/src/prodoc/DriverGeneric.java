@@ -117,6 +117,9 @@ static final public String S_INSFILE   ="INSFILE";
 
 private TreeMap AllTaskTrans=null;
 private TreeMap AllTaskNoTrans=null;
+
+private static FTConnector FTConn=null;
+
 /**
  *
  * @param pURL
@@ -1397,10 +1400,11 @@ return(Rep);
 }
 //-----------------------------------------------------------------------------------
 /**
- *
- * @param RepName
- * @return
- * @throws PDException
+ * Returns an object of type repository from its name
+ * if the repository is yet constructed, returns the constructed one
+ * @param RepName Nmae of repository
+ * @return object of type repository
+ * @throws PDException in any error
  */
 protected StoreGeneric getRepository(String RepName) throws PDException
 {
@@ -2441,4 +2445,31 @@ else
     return("EN");
 }
 //---------------------------------------------------------------------
+/**
+ * Returns an object of type Fulltext indexer
+ * if the repository is yet constructed, returns the constructed one
+ * @return object of type repository
+ * @throws PDException in any error
+ */
+protected FTConnector getFTRepository(String pDocType) throws PDException
+{
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.getFTRepository>");
+if (FTConn!=null)
+    {
+    if (PDLog.isDebug())
+        PDLog.Debug("DriverGeneric.Rep yet Instantiated");
+    return (FTConn);
+    }
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.Rep new Instance");
+PDRepository RepDesc=new PDRepository(this);
+RepDesc.Load("PD_FTRep");
+FTConn=new FTConnLucene(RepDesc.getURL(), RepDesc.getUser(), RepDesc.getPassword(), RepDesc.getParam());
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.getFTRepository<");
+return(FTConn);
+}
+//-----------------------------------------------------------------------------------
+
 }
