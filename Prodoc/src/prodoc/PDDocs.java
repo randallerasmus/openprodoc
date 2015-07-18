@@ -22,11 +22,15 @@ package prodoc;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import static prodoc.PDTasksDef.fNAME;
+import static prodoc.PDTasksDef.fTYPE;
 
 /**
  *
@@ -2146,6 +2150,42 @@ return(Cur);
 /**
  * Search for Folders returning a cursor with the results of folders with the
  * indicated values of fields. Only return the folders alowed for the user, as defined by ACL.
+     * @param FTQuery
+ * @param DocType Type of folder to search. Can return folders of subtype.
+ * @param AttrConds Conditions over the fields ofthe FolderType
+ * @param SubTypes if true, returns results of the indicated type AND susbtipes
+ * @param SubFolders if true seach in actual folder AND subfolders, if false, serach in ALL the structure
+ * @param IncludeVers if true, includes in the searching ALL versions of documents. Not posible with subtypes
+ * @param IdActFold Folder to start the search. if null, start in the root level
+ * @param Ord 
+ * @return a Cursor with the results of the query to use o send to NextFold()
+ * @throws PDException when occurs any problem
+ */
+public Cursor Search(String FTQuery, String DocType, Conditions AttrConds, boolean SubTypes, boolean SubFolders, boolean IncludeVers, String IdActFold, Vector Ord) throws PDException
+{
+if (FTQuery==null || FTQuery.length()==0)
+    return(Search(DocType, AttrConds, SubTypes, SubFolders, IncludeVers, IdActFold, Ord));
+ArrayList FTRes=SearchFT(DocType, SubTypes, FTQuery);
+Condition Cond;
+if (!FTRes.isEmpty())
+    {
+    HashSet IdList=new HashSet(FTRes);
+    Cond=new Condition(PDDocs.fPDID,IdList);    
+    }
+else
+    { //to force an empty curor
+    Cond=new Condition(PDDocs.fPDID, Condition.cEQUAL, "az");
+    }
+Conditions WithFT=new Conditions();
+WithFT.addCondition(Cond);
+if (AttrConds.NumCond()>0)
+    WithFT.addCondition(AttrConds);
+return(Search(DocType, WithFT, SubTypes, SubFolders, IncludeVers, IdActFold, Ord));
+}
+//-------------------------------------------------------------------------
+/**
+ * Search for Folders returning a cursor with the results of folders with the
+ * indicated values of fields. Only return the folders alowed for the user, as defined by ACL.
  * @param DocType Type of folder to search. Can return folders of subtype.
  * @param AttrConds Conditions over the fields ofthe FolderType
  * @param SubTypes if true, returns results of the indicated type AND susbtipes
@@ -2690,6 +2730,11 @@ tr.setResult(Allowed);
 tr.insert();
 }
 //---------------------------------------------------------------------
+/**
+ * Overloading of abstract method. Not valid for documents
+ * @return null 
+ * @throws PDException Always
+ */
 @Override
 public Cursor getAll() throws PDException
 {
@@ -2698,4 +2743,71 @@ return(null);
 }
 //-------------------------------------------------------------------------
 
+protected void ExecuteFTAdd()  throws PDException
+{
+LoadFull(getPDId());
+StoreGeneric Rep=getDrv().getRepository(getReposit());
+if (Rep.IsURL())
+    throw new UnsupportedOperationException("Not supported.");   
+InputStream Is=null;
+try {    
+FTConnector FTConn=getDrv().getFTRepository(getDocType());
+FTConn.Connect();
+Rep.Connect();
+Is=Rep.Retrieve(getPDId(), getVersion());
+FTConn.Insert(getDocType(), getPDId(), Is, getRecSum());
+FTConn.Disconnect();
+Is.close();
+Rep.Disconnect();
+} catch (Exception Ex)
+    {
+    if (Is!=null)
+        {
+        try {
+        Is.close();
+        } catch (IOException ex) {}
+        Rep.Disconnect();
+        }
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }
+}
+//-------------------------------------------------------------------------
+protected void ExecuteFTUpd() throws PDException
+{
+ExecuteFTDel();    
+ExecuteFTAdd();
+}
+//-------------------------------------------------------------------------
+protected void ExecuteFTDel() throws PDException
+{
+Load(getPDId());
+FTConnector FTConn=getDrv().getFTRepository(getDocType());
+FTConn.Connect();
+try {
+FTConn.Delete(getPDId());
+FTConn.Disconnect();
+} catch (Exception Ex)
+    {
+    FTConn.Disconnect();
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }
+}
+//-------------------------------------------------------------------------
+
+private ArrayList SearchFT(String pDocType, boolean SubTypes, String FTQuery) throws PDException
+{
+ArrayList FTRes=null;    
+FTConnector FTConn=getDrv().getFTRepository(pDocType);
+FTConn.Connect();
+try {
+FTRes=FTConn.Search(pDocType, null, null, FTQuery, null);
+FTConn.Disconnect();
+} catch (Exception Ex)
+    {
+    FTConn.Disconnect();
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }   
+return (FTRes);
+}
+//-------------------------------------------------------------------------
 }
