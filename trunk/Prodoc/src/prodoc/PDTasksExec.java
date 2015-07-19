@@ -1295,17 +1295,12 @@ if (PDLog.isDebug())
 private void ExecuteFTDelDoc() throws PDException
 {
 PDDocs Doc=new PDDocs(this.getDrv(), getObjType());
-Doc.LoadFull(getObjFilter());    
+Doc.setPDId(getObjFilter());    
 if (PDLog.isDebug())
-    PDLog.Debug("PDTasksExec.ExecuteFTDelDoc>:"+Doc.getPDId()+"/"+Doc.getTitle());                    
-PDFolders Fold=new PDFolders(getDrv());
-String IdUnder=Fold.getIdPath(getParam());
-Fold.setPDId(Doc.getParentId());
-if (!Fold.IsUnder(IdUnder))    
-   return;          
+    PDLog.Debug("PDTasksExec.ExecuteFTDelDoc>:"+Doc.getPDId());                            
 Doc.ExecuteFTDel();  
 if (PDLog.isDebug())
-    PDLog.Debug("PDTasksExec.ExecuteFTDelDoc<:"+Doc.getPDId()+"/"+Doc.getTitle());                    
+    PDLog.Debug("PDTasksExec.ExecuteFTDelDoc<:"+Doc.getPDId());                    
 }
 //-------------------------------------------------------------------------
 }

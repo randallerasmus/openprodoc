@@ -582,15 +582,10 @@ if (PDLog.isDebug())
 private void ExecuteFTDelDoc(PDDocs Doc) throws PDException
 {
 if (PDLog.isDebug())
-    PDLog.Debug("PDTasksDefEvent.ExecuteFTDelDoc>:"+Doc.getPDId()+"/"+Doc.getTitle());                    
-PDFolders Fold=new PDFolders(getDrv());
-String IdUnder=Fold.getIdPath(getParam());
-Fold.setPDId(Doc.getParentId());
-if (!Fold.IsUnder(IdUnder))    
-   return;          
+    PDLog.Debug("PDTasksDefEvent.ExecuteFTDelDoc>:"+Doc.getPDId());                           
 Doc.ExecuteFTDel();  
 if (PDLog.isDebug())
-    PDLog.Debug("PDTasksDefEvent.ExecuteFTDelDoc<:"+Doc.getPDId()+"/"+Doc.getTitle());                    
+    PDLog.Debug("PDTasksDefEvent.ExecuteFTDelDoc<:"+Doc.getPDId());                    
 }
 //-------------------------------------------------------------------------
 }

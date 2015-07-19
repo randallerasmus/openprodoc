@@ -132,6 +132,36 @@ iwriter.close();
 return(0);
 }
 //-------------------------------------------------------------------------
+@Override
+protected int Update(String Type, String Id, InputStream Bytes, Record pMetadata) throws PDException
+{
+try {       
+iwc = new IndexWriterConfig(analyzer);
+iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+iwriter = new IndexWriter(directory, iwc);
+iwriter.deleteDocuments(new Term(F_ID,Id));
+Document doc = new Document();
+doc.add(new StringField(F_TYPE, Type, Field.Store.YES));
+doc.add(new StringField(F_ID, Id, Field.Store.YES));
+pMetadata.initList();
+for (int NumAttr = 0; NumAttr < pMetadata.NumAttr(); NumAttr++)
+    {
+    Attribute Attr=pMetadata.nextAttr();
+    doc.add(new StringField(Attr.getName(), Attr.Export(), Field.Store.NO));    
+    }
+Convert(Bytes);
+doc.add(new TextField( F_DOCMETADATA, getFileMetadata(), Field.Store.NO));
+doc.add(new TextField( F_FULLTEXT, getFullText(), Field.Store.NO));
+iwriter.addDocument(doc);
+iwriter.commit();
+iwriter.close();
+} catch (Exception ex)
+    {
+    PDException.GenPDException("Error_inserting_doc_FT", ex.getLocalizedMessage());
+    }
+return(0);
+}
+//-------------------------------------------------------------------------
 /**
  * 
  * @param Id
