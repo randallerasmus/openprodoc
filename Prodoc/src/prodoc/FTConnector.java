@@ -93,21 +93,16 @@ abstract protected void Disconnect() throws PDException;
  * @throws PDException
  */
 abstract protected int Insert(String Type, String Id, InputStream Bytes, Record sMetadata) throws PDException;
-protected void Insert(PDDocs Doc) throws PDException
-{
-StoreGeneric Rep=Doc.getDrv().getRepository(Doc.getReposit());  
-try {    
-Rep.Connect();
-Insert(Doc.getDocType(), Doc.getPDId(), Rep.Retrieve(Doc.getPDId(), Doc.getVersion()), Doc.getRecSum());
-//Rep.Retrieve(getPDId(), getVersion(), OutBytes);
-Rep.Disconnect();
-Rep=null;
-} catch(Exception ex)
-    {
-    Rep.Disconnect();
-    throw new PDException(ex.getLocalizedMessage());
-    }    
-}
+/**
+ *
+ * @param Type
+ * @param Id
+ * @param Bytes
+ * @param sMetadata
+ * @return
+ * @throws PDException
+ */
+abstract protected int Update(String Type, String Id, InputStream Bytes, Record sMetadata) throws PDException;
 /**
  *
  * @param Id

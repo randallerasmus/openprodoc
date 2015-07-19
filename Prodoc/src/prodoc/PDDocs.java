@@ -2774,13 +2774,35 @@ Rep.Disconnect();
 //-------------------------------------------------------------------------
 protected void ExecuteFTUpd() throws PDException
 {
-ExecuteFTDel();    
-ExecuteFTAdd();
+LoadFull(getPDId());
+StoreGeneric Rep=getDrv().getRepository(getReposit());
+if (Rep.IsURL())
+    throw new UnsupportedOperationException("Not supported.");   
+InputStream Is=null;
+try {    
+FTConnector FTConn=getDrv().getFTRepository(getDocType());
+FTConn.Connect();
+Rep.Connect();
+Is=Rep.Retrieve(getPDId(), getVersion());
+FTConn.Update(getDocType(), getPDId(), Is, getRecSum());
+FTConn.Disconnect();
+Is.close();
+Rep.Disconnect();
+} catch (Exception Ex)
+    {
+    if (Is!=null)
+        {
+        try {
+        Is.close();
+        } catch (IOException ex) {}
+        Rep.Disconnect();
+        }
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }
 }
 //-------------------------------------------------------------------------
 protected void ExecuteFTDel() throws PDException
 {
-Load(getPDId());
 FTConnector FTConn=getDrv().getFTRepository(getDocType());
 FTConn.Connect();
 try {
