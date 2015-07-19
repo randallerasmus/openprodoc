@@ -946,7 +946,7 @@ return(OperComp);
  * @param Ord
  * @param Rec
  */
-protected void SaveConds(HttpServletRequest Req, String FType, Conditions Cond, boolean SubT, boolean SubF, boolean Vers, String actFolderId, Vector Ord, Record Rec)
+protected void SaveConds(HttpServletRequest Req, String FType, Conditions Cond, boolean SubT, boolean SubF, boolean Vers, String actFolderId, Vector Ord, Record Rec, String FTQuery)
 {
 HttpSession Sess=Req.getSession(true);
 Sess.setAttribute("SD_FType", FType);
@@ -957,6 +957,7 @@ Sess.setAttribute("SD_Vers", Vers);
 Sess.setAttribute("SD_actFolderId", actFolderId);
 Sess.setAttribute("SD_Ord", Ord);
 Sess.setAttribute("SD_Rec", Rec);
+Sess.setAttribute("SD_FTQ", FTQuery);
 }
 //-----------------------------------------------------------------------------------------------
 /**
