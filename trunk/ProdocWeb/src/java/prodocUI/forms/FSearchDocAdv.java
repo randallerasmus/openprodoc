@@ -48,6 +48,7 @@ FieldCombo ListTip;
 FieldCombo ListACL;
 public FieldText DocTitle;
 public FieldText DocPDid;
+public FieldText FTQuery;
 
 final static private String ListExcluded=PDDocs.fDOCTYPE+"/"+PDDocs.fPARENTID+"/"+PDDocs.fPDID
                         +"/"+PDDocs.fPDAUTOR+"/"+PDDocs.fPDDATE
@@ -58,6 +59,7 @@ static final public String COMP="COMP__";
 static final private String COMPTITLE=COMP+PDDocs.fTITLE;
 static final private String COMPACL=COMP+PDDocs.fACL;
 static final private String COMPPDID=COMP+PDDocs.fPDID;
+static final public String COMPFTQ=COMP+"COMPFTQ";
 
 /** Creates a new instance of FMantFoldAdv
  * @param Req
@@ -97,7 +99,7 @@ if (ListDocs!=null) //second time
     HiperlinkImag Reports=new HiperlinkImag("img/"+getStyle()+"Report.png" , "Reports", ReportDocs.getUrlServlet(), "Reports");
     BorderTab.getCelda(0,4).AddElem(Reports);
     }
-Table FormTab=new Table(5, 5, 0);
+Table FormTab=new Table(5, 6, 0);
 FormTab.setCellPadding(5);
 FormTab.setWidth(-100);
 FormTab.setCSSClass("FFormularios");
@@ -194,6 +196,20 @@ if (Sess.getAttribute("SD_SubT")!=null)
     }
 FormTab.getCelda(1,4).AddElem(SubTCh);
 FormTab.getCelda(2,4).AddElem(new Element(TT("SubFolders")+":"));
+
+FTQuery=new FieldText(COMPFTQ);
+FTQuery.setMaxSize(255);
+FTQuery.setCSSClass("FFormInput");
+//FTQuery.setMensStatus(TT(Attr.getDescription()));
+if (Rec!=null && Rec.getAttr(COMPFTQ)!=null)
+    {
+    Val=(String)Rec.getAttr(COMPFTQ).getValue();
+    if (Val!=null)
+        FTQuery.setValue(Val);
+    }
+FormTab.getCelda(1,5).AddElem(new Element(TT("Full_Text_Search")+":"));
+FormTab.getCelda(3,5).AddElem(FTQuery);
+
 FieldCheck SubFCh=new FieldCheck("SubFolders");
 SubFCh.setCSSClass("FFormInputCheck");
 SubFCh.setMensStatus(TT("When_checked_limits_the_search_to_actual_folder_and_subfolders"));

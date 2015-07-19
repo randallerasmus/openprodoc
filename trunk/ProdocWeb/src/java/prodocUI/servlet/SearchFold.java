@@ -130,7 +130,7 @@ while (Attr!=null)
         }
     Attr=Rec.nextAttr();
     }
-SaveConds(Req, FType, Cond, (SubTypes!=null), (SubFolders!=null), false, getActFolderId(Req), null, Rec);
+SaveConds(Req, FType, Cond, (SubTypes!=null), (SubFolders!=null), false, getActFolderId(Req), null, Rec, null);
 Cursor c=F.Search(FType, Cond, (SubTypes!=null), (SubFolders!=null), getActFolderId(Req), null);
 return(c);
 }
