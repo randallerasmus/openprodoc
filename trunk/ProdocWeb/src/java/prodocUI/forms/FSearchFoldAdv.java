@@ -68,7 +68,7 @@ super(Req, SParent.TT(Req,"Search_Folders"), pMode, pRec);
 AddJS("TypesSearch.js");
 AddJS("ThesTreeSel.js");
 HttpSession Sess=Req.getSession(true);
-Record Rec=(Record)Sess.getAttribute("SD_Rec");
+Record Rec=(Record)Sess.getAttribute(SParent.SD_Rec);
 DriverGeneric PDSession=SParent.getSessOPD(Req);
 Table BorderTab=new Table(1, 5, 1);
 BorderTab.setCSSId("BordTab");
@@ -181,9 +181,9 @@ FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");
 SubTCh.setCSSClass("FFormInputCheck");
 SubTCh.setMensStatus(TT("When_checked_includes_subtypes_of_folders_in_results"));
-if (Sess.getAttribute("SD_SubT")!=null)
+if (Sess.getAttribute(SParent.SD_SubT)!=null)
     {
-    if ((Boolean) Sess.getAttribute("SD_SubT"))
+    if ((Boolean) Sess.getAttribute(SParent.SD_SubT))
          SubTCh.setValue("1");
     }
 FormTab.getCelda(1,4).AddElem(SubTCh);
@@ -191,9 +191,9 @@ FormTab.getCelda(2,4).AddElem(new Element(TT("SubFolders")+":"));
 FieldCheck SubFCh=new FieldCheck("SubFolders");
 SubFCh.setCSSClass("FFormInputCheck");
 SubFCh.setMensStatus(TT("When_checked_limits_the_search_to_actual_folder_and_subfolders"));
-if (Sess.getAttribute("SD_SubF")!=null)
+if (Sess.getAttribute(SParent.SD_SubF)!=null)
     {
-    if ((Boolean) Sess.getAttribute("SD_SubF"))
+    if ((Boolean) Sess.getAttribute(SParent.SD_SubF))
         SubFCh.setValue("1");
     }
 FormTab.getCelda(2,4).AddElem(SubFCh);
