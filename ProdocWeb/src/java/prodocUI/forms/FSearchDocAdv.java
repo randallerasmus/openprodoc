@@ -75,7 +75,7 @@ super(Req, SParent.TT(Req,"Search_Documents"), pMode, pRec);
 AddJS("TypesSearch.js");
 AddJS("ThesTreeSel.js");
 HttpSession Sess=Req.getSession(true);
-Record Rec=(Record)Sess.getAttribute("SD_Rec");
+Record Rec=(Record)Sess.getAttribute(SParent.SD_Rec);
 DriverGeneric PDSession=SParent.getSessOPD(Req);
 Table BorderTab=new Table(1, 5, 1);
 BorderTab.setCSSId("BordTab");
@@ -189,9 +189,9 @@ FormTab.getCelda(1,4).AddElem(new Element(TT("Subtypes")+":"));
 FieldCheck SubTCh=new FieldCheck("Subtypes");
 SubTCh.setMensStatus(TT("When_checked_includes_subtypes_of_document_in_results"));
 SubTCh.setCSSClass("FFormInputCheck");
-if (Sess.getAttribute("SD_SubT")!=null)
+if (Sess.getAttribute(SParent.SD_SubT)!=null)
     {
-    if ((Boolean) Sess.getAttribute("SD_SubT"))
+    if ((Boolean) Sess.getAttribute(SParent.SD_SubT))
          SubTCh.setValue("1");
     }
 FormTab.getCelda(1,4).AddElem(SubTCh);
@@ -201,11 +201,9 @@ FTQuery=new FieldText(COMPFTQ);
 FTQuery.setMaxSize(255);
 FTQuery.setCSSClass("FFormInput");
 //FTQuery.setMensStatus(TT(Attr.getDescription()));
-if (Rec!=null && Rec.getAttr(COMPFTQ)!=null)
+if (Sess.getAttribute(SParent.SD_FTQ)!=null)
     {
-    Val=(String)Rec.getAttr(COMPFTQ).getValue();
-    if (Val!=null)
-        FTQuery.setValue(Val);
+    FTQuery.setValue(Sess.getAttribute(SParent.SD_FTQ));
     }
 FormTab.getCelda(1,5).AddElem(new Element(TT("Full_Text_Search")+":"));
 FormTab.getCelda(3,5).AddElem(FTQuery);
@@ -213,9 +211,9 @@ FormTab.getCelda(3,5).AddElem(FTQuery);
 FieldCheck SubFCh=new FieldCheck("SubFolders");
 SubFCh.setCSSClass("FFormInputCheck");
 SubFCh.setMensStatus(TT("When_checked_limits_the_search_to_actual_folder_and_subfolders"));
-if (Sess.getAttribute("SD_SubF")!=null)
+if (Sess.getAttribute(SParent.SD_SubF)!=null)
     {
-    if ((Boolean) Sess.getAttribute("SD_SubF"))
+    if ((Boolean) Sess.getAttribute(SParent.SD_SubF))
         SubFCh.setValue("1");
     }
 FormTab.getCelda(2,4).AddElem(SubFCh);
@@ -223,9 +221,9 @@ FormTab.getCelda(3,4).AddElem(new Element(TT("Versions")+":"));
 FieldCheck VersCh=new FieldCheck("Versions");
 VersCh.setCSSClass("FFormInputCheck");
 VersCh.setMensStatus(TT("When_checked_includes_all_versions_of_document_in_results"));
-if (Sess.getAttribute("SD_Vers")!=null)
+if (Sess.getAttribute(SParent.SD_Vers)!=null)
     {
-    if ((Boolean) Sess.getAttribute("SD_Vers"))
+    if ((Boolean) Sess.getAttribute(SParent.SD_Vers))
         VersCh.setValue("1");
     }
 FormTab.getCelda(3,4).AddElem(VersCh);

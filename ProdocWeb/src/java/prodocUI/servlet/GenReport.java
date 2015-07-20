@@ -80,12 +80,12 @@ DriverGeneric PDSession = getSessOPD(Req);
 HttpSession Sess=Req.getSession(true);
 String Id=Req.getParameter("Id");
 String Type=Req.getParameter("Type");
-String FType=(String)Sess.getAttribute("SD_FType");
-Conditions Conds=(Conditions)Sess.getAttribute("SD_Cond");
-boolean SubT=(Boolean)Sess.getAttribute("SD_SubT");
-boolean SubF=(Boolean)Sess.getAttribute("SD_SubF");
-String actFolderId=(String)Sess.getAttribute("SD_actFolderId");
-Vector Ord=(Vector)Sess.getAttribute("SD_Ord");
+String FType=(String)Sess.getAttribute(SParent.SD_FType);
+Conditions Conds=(Conditions)Sess.getAttribute(SParent.SD_Cond);
+boolean SubT=(Boolean)Sess.getAttribute(SParent.SD_SubT);
+boolean SubF=(Boolean)Sess.getAttribute(SParent.SD_SubF);
+String actFolderId=(String)Sess.getAttribute(SParent.SD_actFolderId);
+Vector Ord=(Vector)Sess.getAttribute(SParent.SD_Ord);
 Cursor Cur=null;
 if (Type.equalsIgnoreCase("Fold"))
     {
@@ -103,7 +103,7 @@ else
         F = new PDDocs(PDSession);
     else
         F = new PDDocs(PDSession, FType);
-    boolean Vers=(Boolean)Sess.getAttribute("SD_Vers");
+    boolean Vers=(Boolean)Sess.getAttribute(SParent.SD_Vers);
     Cur=F.Search(FType, Conds, SubT, SubF, Vers, actFolderId, Ord);
     }
 PDReport Rep=new PDReport(PDSession);
