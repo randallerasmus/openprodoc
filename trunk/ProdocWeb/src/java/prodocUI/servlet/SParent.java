@@ -810,7 +810,8 @@ if (Form==SEARCHDOC_FORM || Form==LAST_FORM && LastForm==SEARCHDOC_FORM)
             boolean Vers=(Boolean) Sess.getAttribute(SParent.SD_Vers);
             String actFolderId=(String) Sess.getAttribute(SParent.SD_actFolderId);
             Vector Ord=(Vector)Sess.getAttribute(SParent.SD_Ord);
-            Results=F.Search(FType, Cond, SubT, SubF, Vers, actFolderId, Ord);
+            String FTQuery=(String) Sess.getAttribute(SParent.SD_FTQ);
+            Results=F.Search(FTQuery, FType, Cond, SubT, SubF, Vers, actFolderId, Ord);
             }
         } 
     FSearchDocAdv f=new FSearchDocAdv(Req, FSearchDocAdv.ADDMOD, Rec, SearchDoc.getUrlServlet(), Results);
