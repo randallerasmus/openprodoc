@@ -104,7 +104,8 @@ else
     else
         F = new PDDocs(PDSession, FType);
     boolean Vers=(Boolean)Sess.getAttribute(SParent.SD_Vers);
-    Cur=F.Search(FType, Conds, SubT, SubF, Vers, actFolderId, Ord);
+    String FTQuery=(String) Sess.getAttribute(SParent.SD_FTQ);
+    Cur=F.Search(FTQuery, FType, Conds, SubT, SubF, Vers, actFolderId, Ord);
     }
 PDReport Rep=new PDReport(PDSession);
 Rep.LoadFull(Id);
