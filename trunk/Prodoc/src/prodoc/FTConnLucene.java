@@ -33,10 +33,11 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -46,17 +47,19 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class FTConnLucene extends FTConnector
 {
-private IndexWriter iwriter;
-private Directory directory;
-private DirectoryReader ireader;
+static private IndexWriter iwriter;
+static private Directory directory;
 private IndexSearcher isearcher;
-private Analyzer analyzer;
-private IndexWriterConfig iwc;
+static private Analyzer analyzer;
+static private IndexWriterConfig iwc;
+static private SearcherManager SM=null;
+static private String DirPath;
 
 //-------------------------------------------------------------------------
 public FTConnLucene(String pServer, String pUser, String pPassword, String pParam)
 {
 super(pServer, pUser, pPassword, pParam);
+DirPath=pServer;
 }
 //-------------------------------------------------------------------------
 @Override
@@ -78,13 +81,25 @@ F.delete();
     }
 }
 //-------------------------------------------------------------------------
+static synchronized private void Initialize() throws Exception
+{
+if (SM!=null)
+    return;
+analyzer = CreateAnalizer();
+Path SerPath=Paths.get(DirPath);
+directory = FSDirectory.open(SerPath);
+iwc = new IndexWriterConfig(analyzer);
+iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+iwriter = new IndexWriter(directory, iwc);
+SM=new SearcherManager(iwriter, false, null);    
+}
+//-------------------------------------------------------------------------
 @Override
 protected void Connect() throws PDException
 {
 try {    
-analyzer = CreateAnalizer();
-Path SerPath=Paths.get(getServer());
-directory = FSDirectory.open(SerPath);
+if (SM==null)
+   Initialize(); 
 } catch (Exception ex)
     {
     PDException.GenPDException("Error_Connecting_FT_Index", ex.getLocalizedMessage());
@@ -95,6 +110,7 @@ directory = FSDirectory.open(SerPath);
 protected void Disconnect() throws PDException
 {
 try {        
+//SM.close();
 //iwriter.close();
 //directory.close();
 } catch (Exception ex)
@@ -107,24 +123,22 @@ try {
 protected int Insert(String Type, String Id, InputStream Bytes, Record pMetadata) throws PDException
 {
 try {       
-iwc = new IndexWriterConfig(analyzer);
-iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-iwriter = new IndexWriter(directory, iwc);
 Document doc = new Document();
-doc.add(new StringField(F_TYPE, Type, Field.Store.YES));
-doc.add(new StringField(F_ID, Id, Field.Store.YES));
+doc.add(new StringField(F_TYPE.toLowerCase(), Type, Field.Store.YES));
+doc.add(new StringField(F_ID, Id.toLowerCase(), Field.Store.YES));
 pMetadata.initList();
 for (int NumAttr = 0; NumAttr < pMetadata.NumAttr(); NumAttr++)
     {
     Attribute Attr=pMetadata.nextAttr();
-    doc.add(new StringField(Attr.getName(), Attr.Export(), Field.Store.NO));    
+    doc.add(new StringField(Attr.getName().toLowerCase(), Attr.Export().toLowerCase(), Field.Store.NO));    
     }
 Convert(Bytes);
-doc.add(new TextField( F_DOCMETADATA, getFileMetadata(), Field.Store.NO));
+doc.add(new TextField( F_DOCMETADATA, getFileMetadata().toLowerCase(), Field.Store.NO));
 doc.add(new TextField( F_FULLTEXT, getFullText(), Field.Store.NO));
 iwriter.addDocument(doc);
 iwriter.commit();
-iwriter.close();
+SM.maybeRefresh();
+//iwriter.close();
 } catch (Exception ex)
     {
     PDException.GenPDException("Error_inserting_doc_FT", ex.getLocalizedMessage());
@@ -136,9 +150,9 @@ return(0);
 protected int Update(String Type, String Id, InputStream Bytes, Record pMetadata) throws PDException
 {
 try {       
-iwc = new IndexWriterConfig(analyzer);
-iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-iwriter = new IndexWriter(directory, iwc);
+//iwc = new IndexWriterConfig(analyzer);
+//iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//iwriter = new IndexWriter(directory, iwc);
 iwriter.deleteDocuments(new Term(F_ID,Id));
 Document doc = new Document();
 doc.add(new StringField(F_TYPE, Type, Field.Store.YES));
@@ -154,7 +168,8 @@ doc.add(new TextField( F_DOCMETADATA, getFileMetadata(), Field.Store.NO));
 doc.add(new TextField( F_FULLTEXT, getFullText(), Field.Store.NO));
 iwriter.addDocument(doc);
 iwriter.commit();
-iwriter.close();
+SM.maybeRefresh();
+//iwriter.close();
 } catch (Exception ex)
     {
     PDException.GenPDException("Error_inserting_doc_FT", ex.getLocalizedMessage());
@@ -171,12 +186,13 @@ return(0);
 protected void Delete(String Id) throws PDException
 {
 try {       
-iwc = new IndexWriterConfig(analyzer);
-iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-iwriter = new IndexWriter(directory, iwc);    
+//iwc = new IndexWriterConfig(analyzer);
+//iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//iwriter = new IndexWriter(directory, iwc);    
 iwriter.deleteDocuments(new Term(F_ID,Id));
 iwriter.commit();
-iwriter.close();
+SM.maybeRefresh();
+//iwriter.close();
 } catch (Exception ex)
     {
     PDException.GenPDException("Error_deleting_doc_FT", ex.getLocalizedMessage());
@@ -194,20 +210,23 @@ iwriter.close();
  * @throws PDException 
  */
 @Override
-protected ArrayList<String> Search(String Type, String Id, String sDocMetadata, String sBody, String sMetadata) throws PDException
+protected ArrayList<String> Search(String Type, String sDocMetadata, String sBody, String sMetadata) throws PDException
 {
 ArrayList<String> Res=new ArrayList();   
 try {  
-ireader = DirectoryReader.open(directory);
-isearcher = new IndexSearcher(ireader);
+//ireader = DirectoryReader.open(directory);
+//isearcher = new IndexSearcher(ireader);
+isearcher=SM.acquire();
 sBody=sBody.toLowerCase();
-System.out.println("Buscando="+sBody);
-Query query = new StandardQueryParser(analyzer).parse(sBody, F_FULLTEXT);
+//System.out.println("Buscando="+sBody);
+Query query = new QueryParser(F_FULLTEXT,analyzer).parse(sBody);
+//Query query = new StandardQueryParser(analyzer).parse(sBody, F_FULLTEXT);
 ScoreDoc[] hits = isearcher.search(query, MAXRESULTS).scoreDocs;
 for (ScoreDoc hit : hits)
     Res.add(isearcher.doc(hit.doc).get(F_ID));
-ireader.close();
-directory.close();
+SM.release(isearcher);
+//ireader.close();
+//directory.close();
 } catch (Exception ex)
     {
     PDException.GenPDException("Error_Searching_doc_FT:", ex.getLocalizedMessage());
@@ -219,7 +238,7 @@ return(Res);
  * Creates a new analyzer ¿in a language and with stop words?
  * @return a new Analyzer
  */
-private Analyzer CreateAnalizer()
+static private Analyzer CreateAnalizer()
 {
 return(new StandardAnalyzer());
 }

@@ -115,10 +115,15 @@ static final public String S_RENFILE   ="RENFILE";
 static final public String S_RETRIEVEFILE   ="RETRIEVEFILE";    
 static final public String S_INSFILE   ="INSFILE";    
 
+static final public String S_FTINS   ="FTINS";    
+static final public String S_FTUPD   ="FTUPD";    
+static final public String S_FTDEL   ="FTDEL";    
+static final public String S_FTSEARCH ="FTSEARCH";    
+
 private TreeMap AllTaskTrans=null;
 private TreeMap AllTaskNoTrans=null;
 
-private static FTConnector FTConn=null;
+protected static FTConnector FTConn=null;
 
 /**
  *
@@ -2020,6 +2025,19 @@ else if (Order.equals(S_CANCEL))
     {
     AnularTrans();
     }
+else if (Order.equals(S_FTSEARCH))
+    {
+    return("<OPD><Result>OK</Result><Data>"+FTSearch(XMLObjects)+"</Data></OPD>");                    
+    }
+else if (Order.equals(S_FTINS))
+    {
+    }
+else if (Order.equals(S_FTUPD))
+    {
+    }
+else if (Order.equals(S_FTUPD))
+    {  
+    }
 else 
     return("<OPD><Result>KO</Result><Msg>Unknown Order</Msg></OPD>");
 return("<OPD><Result>OK</Result></OPD>");
@@ -2472,4 +2490,37 @@ return(FTConn);
 }
 //-----------------------------------------------------------------------------------
 
+private String FTSearch(Document XMLObjects) throws PDException
+{
+NodeList OPDObjectList = XMLObjects.getElementsByTagName("Type");
+Node OPDObject = OPDObjectList.item(0);
+String Type=OPDObject.getTextContent();
+OPDObjectList = XMLObjects.getElementsByTagName("DocMetadata");
+OPDObject = OPDObjectList.item(0);
+String DocMetadata=OPDObject.getTextContent();
+OPDObjectList = XMLObjects.getElementsByTagName("Body");
+OPDObject = OPDObjectList.item(0);
+String Body=OPDObject.getTextContent();
+OPDObjectList = XMLObjects.getElementsByTagName("Metadata");
+OPDObject = OPDObjectList.item(0);
+String Metadata=OPDObject.getTextContent();
+FTConnector FTConn=getFTRepository(Type);
+FTConn.Connect();
+ArrayList<String> FTRes=null; 
+try {
+FTRes=FTConn.Search(Type, DocMetadata, Body, Metadata);
+FTConn.Disconnect();
+} catch (Exception Ex)
+    {
+    FTConn.Disconnect();
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }   
+StringBuilder S=new StringBuilder();
+for (String Id : FTRes)
+    {
+    S.append("<ID>").append(Id).append("</ID>");
+    }
+return(S.toString());    
+}
+//-----------------------------------------------------------------------------------
 }
