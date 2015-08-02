@@ -2822,7 +2822,7 @@ ArrayList FTRes=null;
 FTConnector FTConn=getDrv().getFTRepository(pDocType);
 FTConn.Connect();
 try {
-FTRes=FTConn.Search(pDocType, null, null, FTQuery, null);
+FTRes=FTConn.Search(pDocType, null, FTQuery, null);
 FTConn.Disconnect();
 } catch (Exception Ex)
     {

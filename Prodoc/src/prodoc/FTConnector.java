@@ -41,11 +41,11 @@ private String Password=null;
 private String Param=null;
 private String FullText=null;
 private String FileMetadata=null;
-final public static String F_TYPE="Type";
-final public static String F_ID="Id";
-final public static String F_VER="Ver";
-final public static String F_FULLTEXT="FullText";
-final public static String F_DOCMETADATA="DocMetadata";
+final public static String F_TYPE="type";
+final public static String F_ID="id";
+final public static String F_VER="ver";
+final public static String F_FULLTEXT="fulltext";
+final public static String F_DOCMETADATA="docmetadata";
 final public static String F_PREFIX="F_";
 
 final public static int MAXRESULTS=1000;
@@ -112,14 +112,13 @@ abstract protected void Delete(String Id) throws PDException;
     /**
      *
      * @param Type
-     * @param Id
      * @param sDocMetadata
      * @param sBody
      * @param sMetadata
      * @return
      * @throws PDException
      */
-abstract protected ArrayList<String> Search(String Type, String Id, String sDocMetadata, String sBody, String sMetadata) throws PDException;
+abstract protected ArrayList<String> Search(String Type, String sDocMetadata, String sBody, String sMetadata) throws PDException;
 //-------------------------------------------------------------------------
 /**
 * @return the Server
