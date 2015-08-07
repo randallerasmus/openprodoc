@@ -80,6 +80,7 @@ private int TaskExecFreq=0;
 static private Hashtable TaskSearchList=new Hashtable();
 static private Hashtable TaskExecList=new Hashtable();  
 private String TaskCategory="*";
+private boolean TasksStarted=false;
 //--------------------------------------------------------------------------
 /**
  * reads, interpret and store the requiered elements of the configuration
@@ -117,7 +118,7 @@ for (int i = 0; i < MinPoolSize; i++)
     {
     ListSesion.add(CreateSesion());
     }
-CreateTask();
+//CreateTask();
 }
 //--------------------------------------------------------------------------
 /**
@@ -159,6 +160,10 @@ for (int i = 0; i < ListSesion.size(); i++)
        {
        Session.Lock();
        Session.Assign(user, Password);
+       if (!TasksStarted)
+           {
+           CreateTask();
+           }
        return(Session);
        }
     }
@@ -216,6 +221,7 @@ if (TaskSearchFreq!=0)
     CreateSearchTask(TaskSearchFreq, TaskCategory);
 if (TaskExecFreq!=0)
     CreateExecTask(TaskExecFreq, TaskCategory);
+TasksStarted=true;
 if (PDLog.isDebug())
     PDLog.Debug("CreateTask <");        
 }
@@ -297,7 +303,6 @@ TaskRunnerTask.End();
 TaskExecList.put(ConectorName, null);
 }
 //--------------------------------------------------------------------------
-
 //*******************************************************************
 static private class TaskCreator extends Thread  
 {

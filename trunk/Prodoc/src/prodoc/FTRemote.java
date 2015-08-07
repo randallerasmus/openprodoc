@@ -95,13 +95,19 @@ protected void Disconnect() throws PDException
 @Override
 protected int Insert(String Type, String Id, InputStream Bytes, Record sMetadata) throws PDException
 {
-throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+if (PDLog.isDebug())
+    PDLog.Debug("FTRemote.Insert:"+Id);
+ReadWrite(DriverGeneric.S_FTUPD, "<OPD><Type>"+Type+"</Type><Id>"+Id+"</Id></OPD>");
+return(0);
 }
 //-------------------------------------------------------------------------
 @Override
 protected int Update(String Type, String Id, InputStream Bytes, Record sMetadata) throws PDException
 {
-throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+if (PDLog.isDebug())
+    PDLog.Debug("FTRemote.Update:"+Id);
+ReadWrite(DriverGeneric.S_FTUPD, "<OPD><Type>"+Type+"</Type><Id>"+Id+"</Id></OPD>");
+return(0);
 }
 //-------------------------------------------------------------------------
 @Override
@@ -118,7 +124,7 @@ protected ArrayList<String> Search(String Type, String sDocMetadata, String sBod
 if (PDLog.isDebug())
     PDLog.Debug("FTRemote.Search:"+Type+"/");
 ArrayList<String> Res=new ArrayList<String>();
-Node N=ReadWrite(DriverGeneric.S_FTSEARCH, "<OPD><Type>"+Type+"</Type><DocMetadata>"+sDocMetadata+"</DocMetadata><Body>"+sBody+"</Body><Metadata>"+sMetadata+"</Metadata></OPD>");
+Node N=ReadWrite(DriverGeneric.S_FTSEARCH, "<OPD><Type>"+Type+"</Type><DocMetadata>"+(sDocMetadata!=null?sDocMetadata:"")+"</DocMetadata><Body>"+sBody+"</Body><Metadata>"+sMetadata+"</Metadata></OPD>");
 NodeList RecLst = N.getChildNodes();
 for (int i = 0; i < RecLst.getLength(); i++)
     {
