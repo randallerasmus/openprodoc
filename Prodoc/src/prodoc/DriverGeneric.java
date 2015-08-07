@@ -2031,12 +2031,15 @@ else if (Order.equals(S_FTSEARCH))
     }
 else if (Order.equals(S_FTINS))
     {
+    return("<OPD><Result>OK</Result><Data>"+FTIns(XMLObjects)+"</Data></OPD>");                        
     }
 else if (Order.equals(S_FTUPD))
     {
+    return("<OPD><Result>OK</Result><Data>"+FTUpd(XMLObjects)+"</Data></OPD>");                            
     }
-else if (Order.equals(S_FTUPD))
-    {  
+else if (Order.equals(S_FTDEL))
+    { 
+    return("<OPD><Result>OK</Result><Data>"+FTDel(XMLObjects)+"</Data></OPD>");                    
     }
 else 
     return("<OPD><Result>KO</Result><Msg>Unknown Order</Msg></OPD>");
@@ -2504,15 +2507,17 @@ String Body=OPDObject.getTextContent();
 OPDObjectList = XMLObjects.getElementsByTagName("Metadata");
 OPDObject = OPDObjectList.item(0);
 String Metadata=OPDObject.getTextContent();
-FTConnector FTConn=getFTRepository(Type);
-FTConn.Connect();
 ArrayList<String> FTRes=null; 
+FTConnector FTConn=null;
 try {
+FTConn=getFTRepository(Type);
+FTConn.Connect();
 FTRes=FTConn.Search(Type, DocMetadata, Body, Metadata);
 FTConn.Disconnect();
 } catch (Exception Ex)
     {
-    FTConn.Disconnect();
+    if (FTConn!=null)
+       FTConn.Disconnect();
     PDException.GenPDException(Ex.getLocalizedMessage(), "");
     }   
 StringBuilder S=new StringBuilder();
@@ -2523,4 +2528,63 @@ for (String Id : FTRes)
 return(S.toString());    
 }
 //-----------------------------------------------------------------------------------
+
+private String FTDel(Document XMLObjects) throws PDException
+{
+NodeList OPDObjectList = XMLObjects.getElementsByTagName("Id");
+Node OPDObject = OPDObjectList.item(0);
+String Id=OPDObject.getTextContent();
+try {
+PDDocs D=new PDDocs(this);
+D.Load(Id);
+D.ExecuteFTDel();
+} catch (Exception Ex)
+    {
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }   
+return("");    
+}
+    
+//-----------------------------------------------------------------------------------
+
+private String FTIns(Document XMLObjects) throws PDException
+{
+NodeList OPDObjectList = XMLObjects.getElementsByTagName("Type");
+Node OPDObject = OPDObjectList.item(0);
+String Type=OPDObject.getTextContent();
+OPDObjectList = XMLObjects.getElementsByTagName("Id");
+OPDObject = OPDObjectList.item(0);
+String Id=OPDObject.getTextContent();
+try {
+PDDocs D=new PDDocs(this, Type);
+D.setPDId(Id);
+D.ExecuteFTAdd();
+} catch (Exception Ex)
+    {
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }   
+return("");    
+}
+//-----------------------------------------------------------------------------------
+
+private String FTUpd(Document XMLObjects) throws PDException
+{
+NodeList OPDObjectList = XMLObjects.getElementsByTagName("Type");
+Node OPDObject = OPDObjectList.item(0);
+String Type=OPDObject.getTextContent();
+OPDObjectList = XMLObjects.getElementsByTagName("Id");
+OPDObject = OPDObjectList.item(0);
+String Id=OPDObject.getTextContent();
+try {
+PDDocs D=new PDDocs(this, Type);
+D.setPDId(Id);
+D.ExecuteFTUpd();
+} catch (Exception Ex)
+    {
+    PDException.GenPDException(Ex.getLocalizedMessage(), "");
+    }   
+return("");    
+}
+//-----------------------------------------------------------------------------------
+
 }
