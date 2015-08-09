@@ -42,7 +42,7 @@ public class PDReport extends PDDocs
  /**
  *
  */
-private static final String REPTABNAME="PD_REPORT";
+public static final String REPTABNAME="PD_REPORT";
 private static final String R_LOOPDOCS_S="@OPD_DOCSLOOP_S";
 private static final String R_LOOPDOCS_E="@OPD_DOCSLOOP_E";
 private static final String R_LOOPATTR_S="@OPD_ATTRLOOP_S";
@@ -205,12 +205,12 @@ FO=new FileOutputStream(OrigRep); // download the original
 this.getStream(FO);
 FO.close();
 Template=new File(OrigRep); // read the original
-//BR=new BufferedReader(new FileReader(Template));
 InputStreamReader in = new InputStreamReader(new FileInputStream(OrigRep), "UTF-8"); 
 BR=new BufferedReader(in);
 String Line=BR.readLine();
 while (Line!=null)
     {
+    Line=Line.trim();
     if (Line.startsWith(R_LOOPDOCS_S))
         {
         RecLoopStart=RepLines.size();
@@ -708,6 +708,17 @@ return(Integer)getRecSum().getAttr(PDReport.fDOCSPAGE).getValue();
 public int getPagesPerFile() throws PDException
 {
 return(Integer)getRecSum().getAttr(PDReport.fPAGESDOC).getValue();   
+}
+//-------------------------------------------------------------------------
+/**
+ *
+ * @throws PDException
+ */
+@Override
+public void Install() throws PDException
+{
+    
+getDrv().CreateTable(getTabName(), getRecordStruct());
 }
 //-------------------------------------------------------------------------
 }

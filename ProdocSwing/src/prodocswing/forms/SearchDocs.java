@@ -79,8 +79,8 @@ initComponents();
         LabelFT = new javax.swing.JLabel();
         TextFieldFT = new javax.swing.JTextField();
         Attributes = new javax.swing.JTabbedPane();
-        ButtonCancel = new javax.swing.JButton();
         ButtonAcept = new javax.swing.JButton();
+        ButtonCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(MainWin.TT("Search_Documents"));
@@ -126,6 +126,17 @@ initComponents();
 
         TextFieldFT.setFont(MainWin.getFontDialog());
 
+        ButtonAcept.setFont(MainWin.getFontDialog());
+        ButtonAcept.setText(MainWin.TT("Ok"));
+        ButtonAcept.setEnabled(false);
+        ButtonAcept.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                ButtonAceptActionPerformed(evt);
+            }
+        });
+
         ButtonCancel.setFont(MainWin.getFontDialog());
         ButtonCancel.setText(MainWin.TT("Cancel"));
         ButtonCancel.addActionListener(new java.awt.event.ActionListener()
@@ -133,16 +144,6 @@ initComponents();
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 ButtonCancelActionPerformed(evt);
-            }
-        });
-
-        ButtonAcept.setFont(MainWin.getFontDialog());
-        ButtonAcept.setText(MainWin.TT("Ok"));
-        ButtonAcept.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                ButtonAceptActionPerformed(evt);
             }
         });
 
@@ -253,6 +254,7 @@ for (int i = 0; i < DocSearched.NumAttr(); i++)
         Attr.setMultivalued(false);// to avoid problems with SetValue for searching
     }
 setRecord(DocSearched);
+ButtonAcept.setEnabled(true);
 } catch (PDException ex)
     {
     MainWin.Message(MainWin.DrvTT(ex.getLocalizedMessage()));

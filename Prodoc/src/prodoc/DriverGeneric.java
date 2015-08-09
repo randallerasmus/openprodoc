@@ -528,12 +528,7 @@ for (int i = 0; i < Rec.NumAttr(); i++)
     }
 Trace.add("Definitions elements created");
 // --- Folders -----------------------------------------
-PDFolders.CreateBaseRootFold(this);
-PDFolders UsersFold=new PDFolders(this);
-//UsersFold.setPDId(PDFolders.USERSFOLDER);
-//UsersFold.setTitle(PDFolders.USERSFOLDER);
-//UsersFold.setParentId(PDFolders.ROOTFOLDER);
-//UsersFold.setACL("Public");
+PDFolders.CreateBaseRootFold(this); //and all the system folders
 // --- Administrator ---
 PDUser Usu=new PDUser(this);
 Usu.setName("root");
@@ -581,13 +576,39 @@ for (int i = 0; i < RecD.NumAttr(); i++)
     D.addAtribute(RecD.nextAttr());
     }
 Trace.add("Document elements created");
+//--- Creating Reports Type -------------
+File FileImp=new File("ex/PD_REPORTS.opd");
+ProcessXML(FileImp, PDFolders.ROOTFOLDER);
+D.CreateObjectTables(PDReport.REPTABNAME, false); 
+FileImp=new File("ex/PD_REP_EXA_TXT.opd");
+ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+FileImp=new File("ex/PD_REP_EXA_CSV.opd");
+ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+FileImp=new File("ex/PD_REP_EXA_HTML.opd");
+ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+FileImp=new File("ex/PD_REP_EXA_XML.opd");
+ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+Trace.add("Reports Type and Examples created");
+//--- Creating RIS Complete Type -------------
+FileImp=new File("ex/PD_REPOSIT_URL.opd");
+ProcessXML(FileImp, PDFolders.ROOTFOLDER);
+//--- Creating RIS Complete Type -------------
+FileImp=new File("ex/PD_RIS_COMP.opd");
+ProcessXML(FileImp, PDFolders.ROOTFOLDER);
+D.CreateObjectTables("RIS_Complete", false); 
+FileImp=new File("ex/PD_REP_EXA_RIS.opd"); //report for RIS
+ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+//--- Creating RIS Reassign Type -------------
+FileImp=new File("ex/PD_RIS_REASIG.opd");
+ProcessXML(FileImp, PDFolders.ROOTFOLDER);
+D.CreateObjectTables("RIS_Reasign", false); 
+Trace.add("RIS types created");
 //----------MIME Types -------------------------------------------
-File FileImp=new File("ex/defs.opd");
+FileImp=new File("ex/defs.opd");
 ProcessXML(FileImp, PDFolders.ROOTFOLDER);
 TE.CreateRootThesaur();
 //----------------------
-this.CerrarTrans();
-
+CerrarTrans();
 Trace.add("Installation finished");
 }
 //--------------------------------------------------------------------------
