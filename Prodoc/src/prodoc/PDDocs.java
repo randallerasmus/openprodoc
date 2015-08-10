@@ -558,6 +558,8 @@ this.Name = Name;
  */
 protected void VerifyAllowedIns() throws PDException
 {
+if (PDLog.isDebug())
+    PDLog.Debug("PDDocs.VerifyAllowedIns>");    
 if (!getDrv().getUser().getRol().isAllowCreateDoc() )
    PDExceptionFunc.GenPDException("Document_creation_not_allowed_to_user",getName());
 PDObjDefs D=new PDObjDefs(getDrv());
@@ -567,6 +569,8 @@ if (!getDrv().getUser().getAclList().containsKey(D.getACL()))
 Integer Perm=(Integer)getDrv().getUser().getAclList().get(D.getACL());
 if (Perm.intValue()<PDACL.pUPDATE)
     PDExceptionFunc.GenPDException("Document_creation_not_allowed_to_user",getDrv().getUser().getName()+" / "+getDocType());
+if (PDLog.isDebug())
+    PDLog.Debug("PDDocs.VerifyAllowedIns<");    
 }
 //-------------------------------------------------------------------------
 /**
@@ -1248,8 +1252,8 @@ for (int NumDefTyp = 0; NumDefTyp<getTypeDefs().size(); NumDefTyp++)
 public void insert() throws PDException
 {
 boolean InTransLocal;
-if (PDLog.isDebug())
-    PDLog.Debug("PDDocs.insert>:"+getPDId());
+if (PDLog.isInfo())
+    PDLog.Debug("PDDocs.insert>: File="+FilePath+" R="+getRecSum());
 VerifyAllowedIns();
 InTransLocal=!getDrv().isInTransaction();
 if (InTransLocal)
@@ -1260,7 +1264,7 @@ if (getPDId()==null || getPDId().length()==0)
 String Fold=getParentId();
 if (Fold==null || Fold.length()==0)
     setParentId(getDrv().getUser().getUserFolder());
-if (!(getDrv().getUser().getName().equals("Install") && getDrv().getUser().getAclList()==null))
+if (!(getDrv().getUser().getName().equals("Install") && getDrv().getUser().getAclList()==null)) //just for installation tasks
     {
     PDFolders Parent=new PDFolders(getDrv());
     Parent.Load(getParentId());
@@ -2451,6 +2455,8 @@ FMetadataXML=null;
  */
 public void ImportXMLNode(Node OPDObject, String FolderPath, String DestFold, boolean MaintainId) throws PDException
 {
+if (PDLog.isInfo())
+    PDLog.Debug("PDDocs.ImportXMLNode>:FolderPath="+FolderPath+" DestFold="+DestFold+" MaintainId="+MaintainId+" OPDObject="+OPDObject);    
 if (FolderPath.charAt(FolderPath.length()-1)!=File.separatorChar)
     FolderPath+=File.separatorChar; 
 NodeList childNodes = OPDObject.getChildNodes();
@@ -2481,6 +2487,8 @@ for (int i = 0; i < childNodes.getLength(); i++)
             }
         }
     }
+if (PDLog.isDebug())
+    PDLog.Debug("PDDocs.ImportXMLNode<");    
 NewDoc.insert();
 }    
 //-------------------------------------------------------------------------

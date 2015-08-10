@@ -454,6 +454,8 @@ return(S.toString());
 //--------------------------------------------------------------------------
 static Record FillFromXML(Node AttrsNode, Record R) throws PDException
 {
+if (PDLog.isDebug())
+    PDLog.Debug("Record.FillFromXML>:R="+R+"AttrsNode="+AttrsNode);        
 NodeList AttrLst = AttrsNode.getChildNodes();
 for (int j = 0; j < AttrLst.getLength(); j++)
     {
@@ -469,6 +471,8 @@ for (int j = 0; j < AttrLst.getLength(); j++)
             At.Import(Value);
         }
     }
+if (PDLog.isDebug())
+    PDLog.Debug("Record.FillFromXML<");        
 return(R);
 }
 //--------------------------------------------------------------------------

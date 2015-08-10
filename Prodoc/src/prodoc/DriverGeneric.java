@@ -576,37 +576,38 @@ for (int i = 0; i < RecD.NumAttr(); i++)
     D.addAtribute(RecD.nextAttr());
     }
 Trace.add("Document elements created");
+//----------MIME Types -------------------------------------------
+File FileImp=new File("ex/defs.opd");
+ProcessXML(FileImp, PDFolders.ROOTFOLDER);
+Trace.add("MIME types created");
 //--- Creating Reports Type -------------
-File FileImp=new File("ex/PD_REPORTS.opd");
+FileImp=new File("ex/PD_REPORTS.opd");
 ProcessXML(FileImp, PDFolders.ROOTFOLDER);
 D.CreateObjectTables(PDReport.REPTABNAME, false); 
-FileImp=new File("ex/PD_REP_EXA_TXT.opd");
-ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
-FileImp=new File("ex/PD_REP_EXA_CSV.opd");
-ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
-FileImp=new File("ex/PD_REP_EXA_HTML.opd");
-ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
-FileImp=new File("ex/PD_REP_EXA_XML.opd");
-ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+//FileImp=new File("ex/PD_REP_EXA_TXT.opd");
+//ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+//FileImp=new File("ex/PD_REP_EXA_CSV.opd");
+//ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+//FileImp=new File("ex/PD_REP_EXA_HTML.opd");
+//ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+//FileImp=new File("ex/PD_REP_EXA_XML.opd");
+//ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
 Trace.add("Reports Type and Examples created");
 //--- Creating RIS Complete Type -------------
 FileImp=new File("ex/PD_REPOSIT_URL.opd");
 ProcessXML(FileImp, PDFolders.ROOTFOLDER);
 //--- Creating RIS Complete Type -------------
 FileImp=new File("ex/PD_RIS_COMP.opd");
-ProcessXML(FileImp, PDFolders.ROOTFOLDER);
-D.CreateObjectTables("RIS_Complete", false); 
-FileImp=new File("ex/PD_REP_EXA_RIS.opd"); //report for RIS
 ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
+D.CreateObjectTables("RIS_Complete", false); 
+//FileImp=new File("ex/PD_REP_EXA_RIS.opd"); //report for RIS
+//ProcessXML(FileImp, PDFolders.SYSTEMFOLDER);
 //--- Creating RIS Reassign Type -------------
 FileImp=new File("ex/PD_RIS_REASIG.opd");
 ProcessXML(FileImp, PDFolders.ROOTFOLDER);
 D.CreateObjectTables("RIS_Reasign", false); 
 Trace.add("RIS types created");
-//----------MIME Types -------------------------------------------
-FileImp=new File("ex/defs.opd");
-ProcessXML(FileImp, PDFolders.ROOTFOLDER);
-TE.CreateRootThesaur();
+TE.CreateRootThesaur(DefLang);
 //----------------------
 CerrarTrans();
 Trace.add("Installation finished");
@@ -647,7 +648,7 @@ if (Serv.getVersion().equalsIgnoreCase("0.7")) //******************************
             Trace.add(pDException.getLocalizedMessage());            
         }
     try {
-    TE.CreateRootThesaur();
+    TE.CreateRootThesaur("EN");
     Trace.add("Root Term created");
     } catch (PDException pDException)
         {
@@ -1913,6 +1914,8 @@ return PDCust;
  */
 public int ProcessXML(File XMLFile, String ParentFolderId) throws PDException
 {
+if (PDLog.isInfo())
+    PDLog.Debug("DriverGeneric.ProcessXML>:XMLFile="+XMLFile.getAbsolutePath()+" ParentFolderId="+ParentFolderId);        
 try {
 DocumentBuilder DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 Document XMLObjects = DB.parse(XMLFile);
@@ -1920,6 +1923,8 @@ NodeList OPDObjectList = XMLObjects.getElementsByTagName(ObjPD.XML_OPDObject);
 Node OPDObject = null;
 ObjPD Obj2Build=null;
 int Tot=0;
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.ProcessXML:Elements="+OPDObjectList.getLength());        
 for (int i=0; i<OPDObjectList.getLength(); i++)
     {
     OPDObject = OPDObjectList.item(i);
@@ -1940,6 +1945,8 @@ for (int i=0; i<OPDObjectList.getLength(); i++)
         }
     }
 DB.reset();
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.ProcessXML<");        
 return(Tot);
 }catch(Exception ex)
     {
@@ -1949,10 +1956,12 @@ return(Tot);
 }
 //---------------------------------------------------------------------
 private ObjPD BuildObj(Node OPDObject) throws PDException
-{
+{           
 NamedNodeMap attributes = OPDObject.getAttributes();
 Node namedItem = attributes.getNamedItem("type");
 String OPDObjectType=namedItem.getNodeValue();
+if (PDLog.isDebug())
+    PDLog.Debug("DriverGeneric.BuildObj:Tipe="+OPDObjectType);            
 if (OPDObjectType.equalsIgnoreCase(PDDocs.getTableName()))
     return(new PDDocs(this));
 if (OPDObjectType.equalsIgnoreCase(PDFolders.getTableName()))
