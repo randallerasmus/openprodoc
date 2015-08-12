@@ -187,7 +187,7 @@ this.Param = Param;
 protected String Convert(InputStream Bytes) throws PDException
 {  
 try {                
-ContentHandler textHandler=new BodyContentHandler();
+ContentHandler textHandler=new BodyContentHandler(-1);
 Metadata metadata=new Metadata();
 Parser parser=new AutoDetectParser();
 ParseContext context=new ParseContext();
