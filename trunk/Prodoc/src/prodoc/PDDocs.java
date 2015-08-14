@@ -1281,6 +1281,7 @@ if (getReposit()==null || getReposit().length()==0 )
     setReposit(getDrv().getAssignedRepos(getDocType()));
 AddLogFields();
 setVersion("1.0");
+getRecSum().CheckDef();
 StoreGeneric Rep=getDrv().getRepository(getReposit());
 if (getName()==null || getName().length()==0)
     {
@@ -1740,12 +1741,12 @@ if (InTransLocal)
 try {
 String Id=getPDId();
 PDDocs TobeUpdated=new PDDocs(getDrv());
-//TobeUpdated.Load(Id);
 TobeUpdated.LoadCurrent(Id);
 if (TobeUpdated.getLockedBy()==null || !TobeUpdated.getLockedBy().equalsIgnoreCase(getDrv().getUser().getName()))
    PDExceptionFunc.GenPDException("Document_not_locked_by_user", getPDId());
 AddLogFields();
 setReposit(TobeUpdated.getReposit());
+getRecSum().CheckDef();
 Record Rec=getRecSum().Copy();
 Rec.delAttr(fVERSION);
 Attribute Attr=Rec.getAttr(fDOCTYPE);

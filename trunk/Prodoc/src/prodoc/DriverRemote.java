@@ -162,13 +162,14 @@ return (Conected);
  * @param Fields
  * @throws PDException 
  */
+@Override
 protected void CreateTable(String TableName, Record Fields) throws PDException
 {
 if (PDLog.isInfo())
     PDLog.Info("DriverRemote.CreateTable>:"+TableName+"/"+Fields);
 ReadWrite(S_CREATE, "<OPD><Tab>"+TableName+"</Tab>"+Fields.toXMLt()+"</OPD>");
-if (PDLog.isInfo())
-    PDLog.Info("DriverRemote.CreateTable<:"+TableName);
+if (PDLog.isDebug())
+    PDLog.Debug("DriverRemote.CreateTable<:"+TableName);
 }
 //--------------------------------------------------------------------------
 /**
@@ -176,21 +177,24 @@ if (PDLog.isInfo())
  * @param TableName
  * @throws PDException 
  */
+@Override
 protected void DropTable(String TableName) throws PDException
 {
 if (PDLog.isInfo())
     PDLog.Info("DriverRemote.DropTable>:"+TableName);
-ReadWrite(S_DROP, TableName);
-if (PDLog.isInfo())
-    PDLog.Info("DriverRemote.DropTable<:"+TableName);
+ReadWrite(S_DROP, "<OPD><Tab>"+TableName+"</Tab></OPD>");
+if (PDLog.isDebug())
+    PDLog.Debug("DriverRemote.DropTable<:"+TableName);
 }
 //--------------------------------------------------------------------------
 /**
  * Modifies a table adding a field
  * @param TableName
  * @param NewAttr New field to add
+     * @param IsVer
  * @throws PDException
  */
+@Override
 protected void AlterTableAdd(String TableName, Attribute NewAttr, boolean IsVer) throws PDException
 {
 if (PDLog.isInfo())
@@ -206,6 +210,7 @@ if (PDLog.isInfo())
  * @param OldAttr old field to delete
  * @throws PDException
  */
+@Override
 protected void AlterTableDel(String TableName, String OldAttr) throws PDException
 {
 if (PDLog.isInfo())
@@ -221,11 +226,12 @@ if (PDLog.isInfo())
  * @param Fields
  * @throws PDException 
  */
+@Override
 protected void InsertRecord(String TableName, Record Fields) throws PDException
 {
 if (PDLog.isDebug())
     PDLog.Debug("DriverRemote.InsertRecord>:"+TableName+"="+Fields);
-ReadWrite(S_INSERT, "<OPD><Tab>"+TableName+"</Tab>"+Fields.toXMLt()+"</OPD>");
+ReadWrite(S_INSERT, "<OPD><Tab>"+TableName+"</Tab>"+Fields.toXMLtNotNull()+"</OPD>");
 if (PDLog.isDebug())
     PDLog.Debug("DriverRemote.InsertRecord<");
 }
@@ -236,6 +242,7 @@ if (PDLog.isDebug())
  * @param DelConds
  * @throws PDException 
  */
+@Override
 protected void DeleteRecord(String TableName, Conditions DelConds) throws PDException
 {
 if (PDLog.isDebug())
@@ -252,6 +259,7 @@ if (PDLog.isDebug())
  * @param UpConds
  * @throws PDException 
  */
+@Override
 protected void UpdateRecord(String TableName, Record NewFields, Conditions UpConds) throws PDException
 {
 if (PDLog.isDebug())
@@ -269,6 +277,7 @@ if (PDLog.isDebug())
  * @param Field2
  * @throws PDException
  */
+@Override
 protected void AddIntegrity(String TableName1, String Field1, String TableName2, String Field2) throws PDException
 {
 if (PDLog.isDebug())
@@ -288,6 +297,7 @@ if (PDLog.isDebug())
  * @param Field22 
  * @throws PDException
  */
+@Override
 protected void AddIntegrity(String TableName1, String Field11, String Field12, String TableName2, String Field21, String Field22) throws PDException
 {
 if (PDLog.isDebug())
@@ -301,6 +311,7 @@ if (PDLog.isDebug())
  * Starts a Transaction
  * @throws PDException 
  */
+@Override
 public void IniciarTrans() throws PDException
 {
 if (PDLog.isDebug())
@@ -318,6 +329,7 @@ setInTransaction(true);
  * Ends a transaction
  * @throws PDException 
  */
+@Override
 public void CerrarTrans() throws PDException
 {
 if (PDLog.isDebug())
@@ -335,6 +347,7 @@ setInTransaction(false);
  * Aborts a Transaction
  * @throws PDException 
  */
+@Override
 public void AnularTrans() throws PDException
 {
 if (PDLog.isDebug())
@@ -354,6 +367,7 @@ setInTransaction(false);
  * @return String identifier of the cursor
  * @throws PDException
  */
+@Override
 public Cursor OpenCursor(Query Search) throws PDException
 {
 if (PDLog.isDebug())
@@ -399,6 +413,7 @@ return(StoreCursor(Res, RF));
  * @param CursorIdent
  * @throws PDException 
  */
+@Override
 public void CloseCursor(Cursor CursorIdent) throws PDException
 {
 if (PDLog.isDebug())
@@ -415,6 +430,7 @@ delCursor(CursorIdent);
  * @return OPD next Record
  * @throws PDException 
  */
+@Override
 public Record NextRec(Cursor CursorIdent) throws PDException
 {
 if (PDLog.isDebug())

@@ -453,18 +453,8 @@ else
         }
     }
 AddLogFields();
+getRecSum().CheckDef();
 MonoInsert();
-//for (int i = getTypeDefs().size()-1; i >=0; i--)
-//    {
-//    Record TypDef=(Record)getTypeDefs().get(i);
-//    Record DatParc=(Record)getTypeRecs().get(i);
-//    if (i!=getTypeDefs().size()-1)
-//        {
-//        DatParc.addAttr(getRecSum().getAttr(fPDID));
-//        }
-//    DatParc.assign(getRecSum().CopyMono());
-//    getDrv().InsertRecord((String)TypDef.getAttr(PDObjDefs.fNAME).getValue(), DatParc);
-//    }
 MultiInsert(getRecSum());
 if (!IsRootFolder)
     ActFoldLev();
@@ -932,6 +922,7 @@ if (InTransLocal)
     getDrv().IniciarTrans();
 try {
 AddLogFields();
+//getRecSum().CheckDef();
 Record R=getRecord().Copy();
 R.delAttr(fPARENTID);
 R.delAttr(fFOLDTYPE);

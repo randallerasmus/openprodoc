@@ -381,7 +381,6 @@ static private long SleepTime=1000;
 private boolean Continue=true;
 private int TaskExecFreq;
 private String TaskCategory;
-//private Conector Con;
 PDTasksExec TaskRun;
 
 //-------------------------------------------------
@@ -390,7 +389,6 @@ public TaskRunner(int pTaskExecFreq, String pTaskCategory, Conector pCon)
 setName("TaskRunner");
 TaskExecFreq=pTaskExecFreq;   
 TaskCategory=pTaskCategory;
-//Con=pCon;
 try {
 DriverGeneric Session=pCon.CreateSesion();
 Session.Lock();
@@ -408,7 +406,6 @@ if (PDLog.isDebug())
 public void End()
 {
 Continue=false;    
-//System.out.println("Continue:"+Continue);
 } 
 //-------------------------------------------------
 @Override 
@@ -427,7 +424,8 @@ while (Continue)
         d1=new Date();
         if (PDLog.isDebug())
             PDLog.Debug("TaskRunner run: "+d2);    
-        TaskRun.ExecutePendingTaskCat(TaskCategory);
+       TaskRun.getDrv().AssignTaskUser(); // to refresh ACL and other changes
+       TaskRun.ExecutePendingTaskCat(TaskCategory);
         if (PDLog.isDebug())
             PDLog.Debug("TaskRunner ends: "+new Date());    
         }
