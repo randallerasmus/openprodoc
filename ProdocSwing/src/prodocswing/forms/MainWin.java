@@ -1000,26 +1000,38 @@ SelFolderDesc.setText(HtmlDesc(FoldAct));
 
     private void AddFoldAdvancedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_AddFoldAdvancedActionPerformed
     {//GEN-HEADEREND:event_AddFoldAdvancedActionPerformed
+DialogEditFold DEF;
+PDFolders Fold;
 try {
-DialogEditFold DEF = new DialogEditFold(this, true);
+DEF = new DialogEditFold(this, true);
 DEF.setLocationRelativeTo(null);
 DEF.AddMode();
 DEF.setAcl(FoldAct.getACL());
-PDFolders Fold=new PDFolders(Session);
-DEF.setParentPath(Fold.getPathId(FoldAct.getPDId()));
-DEF.setVisible(true);
-if (DEF.isCancel())
-    return;
 Fold=new PDFolders(Session);
-Fold.assignValues(DEF.getRecord());
-Fold.setParentId(getActFolderId());
-Fold.insert();
-TreePath ActualPath = TreeFolder.getSelectionPath();
-ExpandFold((DefaultMutableTreeNode)ActualPath.getLastPathComponent());
-TreeFolder.setSelectionPath(ActualPath);
+DEF.setParentPath(Fold.getPathId(FoldAct.getPDId()));
 } catch (Exception ex)
     {
     Message(DrvTT(ex.getLocalizedMessage()));
+    return;
+    }
+while (true)
+    {
+    try {
+    DEF.setVisible(true);
+    if (DEF.isCancel())
+        return;
+    Fold=new PDFolders(Session);
+    Fold.assignValues(DEF.getRecord());
+    Fold.setParentId(getActFolderId());
+    Fold.insert();
+    TreePath ActualPath = TreeFolder.getSelectionPath();
+    ExpandFold((DefaultMutableTreeNode)ActualPath.getLastPathComponent());
+    TreeFolder.setSelectionPath(ActualPath);
+    return;
+    } catch (Exception ex)
+        {
+        Message(DrvTT(ex.getLocalizedMessage()));
+        }
     }
     }//GEN-LAST:event_AddFoldAdvancedActionPerformed
 
@@ -1045,26 +1057,39 @@ TreeFolder.setSelectionPath(selectionPath);
 
     private void ModFoldAdvancedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ModFoldAdvancedActionPerformed
     {//GEN-HEADEREND:event_ModFoldAdvancedActionPerformed
-try {
+DialogEditFold DEF;
+PDFolders Fold;
 TreePath selectionPath = TreeFolder.getSelectionPath();
+try {
 DefaultMutableTreeNode TreeFold = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-PDFolders Fold= ((TreeFolder) TreeFold.getUserObject()).getFold();
-DialogEditFold DEF = new DialogEditFold(this, true);
+Fold= ((TreeFolder) TreeFold.getUserObject()).getFold();
+DEF = new DialogEditFold(this, true);
 DEF.setLocationRelativeTo(null);
 DEF.EditMode();
 Fold.LoadFull(Fold.getPDId());
 DEF.setRecord(Fold.getRecord());
-DEF.setVisible(true);
-if (DEF.isCancel())
-    return;
-Fold.assignValues(DEF.getRecord());
-Fold.update();
-TreePath ParentFold = (TreePath) TreeFolder.getSelectionPath().getParentPath();
-ExpandFold((DefaultMutableTreeNode)ParentFold.getLastPathComponent());
-TreeFolder.setSelectionPath(selectionPath);
 } catch (Exception ex)
     {
     Message(DrvTT(ex.getLocalizedMessage()));
+    return;
+    }
+while (true)
+    {
+    try {
+    DEF.setVisible(true);
+    if (DEF.isCancel())
+        return;
+    DEF.getRecord().CheckDef();
+    Fold.assignValues(DEF.getRecord());
+    Fold.update();
+    TreePath ParentFold = (TreePath) TreeFolder.getSelectionPath().getParentPath();
+    ExpandFold((DefaultMutableTreeNode)ParentFold.getLastPathComponent());
+    TreeFolder.setSelectionPath(selectionPath);
+    return;
+    } catch (Exception ex)
+        {
+        Message(DrvTT(ex.getLocalizedMessage()));
+        }
     }
     }//GEN-LAST:event_ModFoldAdvancedActionPerformed
 
@@ -1208,6 +1233,7 @@ while (true)
     MD.setVisible(true);
     if (MD.isCancel())
         return;
+    MD.getRecord().CheckDef();
     Doc.assignValues(MD.getRecord());
     if (MD.GetSelectPath()!=null && MD.GetSelectPath().length()>0)
         Doc.setFile(MD.GetSelectPath());
@@ -2496,6 +2522,8 @@ CancelCheckout.setVisible(R.isAllowMaintainDoc());
 CheckIn.setVisible(R.isAllowMaintainDoc());
 CheckOut.setVisible(R.isAllowMaintainDoc());
 DelDoc.setVisible(R.isAllowMaintainDoc());
+ImportExtFold.setVisible(R.isAllowCreateFolder() && R.isAllowCreateDoc());
+ImportExtRIS.setVisible(R.isAllowCreateDoc());
 } catch (Exception ex)
     {
     Message(ex.getLocalizedMessage());

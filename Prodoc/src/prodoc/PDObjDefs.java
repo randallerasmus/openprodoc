@@ -219,7 +219,10 @@ if (Rec.getAttr(fCREATED).getValue()!=null)
     setCreated(((Boolean)Rec.getAttr(fCREATED).getValue()).booleanValue());
 setACL((String)  Rec.getAttr(fACL).getValue());
 setParent((String)  Rec.getAttr(fPARENT).getValue());
-setReposit((String) Rec.getAttr(fREPOSIT).getValue());
+if (getClassType()!=null && getClassType().equalsIgnoreCase(CT_DOC))
+    setReposit((String) Rec.getAttr(fREPOSIT).getValue());
+else
+    setReposit(null);
 if (Rec.getAttr(fTRACEADD).getValue()!=null)
     setTraceAdd(((Boolean)Rec.getAttr(fTRACEADD).getValue()).booleanValue());
 if (Rec.getAttr(fTRACEDEL).getValue()!=null)

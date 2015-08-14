@@ -1044,7 +1044,7 @@ if (ProdocProperRef==null)
         Path=System.getenv("OPDWeb");
         Is  = new FileInputStream(Path+File.separator+"OPDWeb.properties");            
         }
-    Properties p= new Properties();
+    Properties p= new Properties(); // TODO: CAMBIAR DOC apunta a OPEWEB , no properties y jdbc en path. Interfaz administración tareas ingles y 't''
     p.load(Is);
     Is.close();
     ProdocProperRef=p.getProperty("OPDConfig");
